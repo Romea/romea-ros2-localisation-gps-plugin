@@ -1,0 +1,9 @@
+<library path="lib/libgps_localisation_plugin_nodelet">
+  <class name="romea_localisation_gps_plugin/GPSLocalisationPluginNodelet"
+         type="romea::GPSLocalisationPluginNodelet"
+         base_class_type="nodelet::Nodelet">
+  <description>
+  GPSLocalisationPlugin nodelet
+  </description>
+  </class>
+</library>
