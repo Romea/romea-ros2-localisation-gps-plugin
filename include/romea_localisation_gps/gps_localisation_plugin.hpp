@@ -89,7 +89,7 @@ protected:
   rclcpp::Subscription<OdometryMsg>::SharedPtr odom_sub_;
   rclcpp::Publisher<ObservationCourseStampedMsg>::SharedPtr course_pub_;
   rclcpp::Publisher<ObservationPosition2DStampedMsg>::SharedPtr position_pub_;
-  std::unique_ptr<DiagnosticPublisher<DiagnosticReport>> diagnostic_pub_;
+  std::shared_ptr<StampedPublisherBase<DiagnosticReport>> diagnostic_pub_;
   rclcpp::TimerBase::SharedPtr timer_;
 
   geometry_msgs::msg::TransformStamped tf_world_to_map_;

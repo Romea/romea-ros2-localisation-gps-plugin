@@ -65,7 +65,7 @@ void GPSLocalisationPlugin::init_position_publisher_()
 //-----------------------------------------------------------------------------
 void GPSLocalisationPlugin::init_diagnostic_publisher_()
 {
-  diagnostic_pub_ = std::make_unique<DiagnosticPublisher<DiagnosticReport>>(node_,node_->get_name(),1.0);
+  diagnostic_pub_ = make_diagnostic_publisher<DiagnosticReport>(node_,node_->get_name(),1.0);
 }
 
 //-----------------------------------------------------------------------------
