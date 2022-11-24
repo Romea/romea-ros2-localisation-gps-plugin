@@ -1,7 +1,11 @@
-#ifndef __GPSLocalisationPlugin_HPP__
-#define __GPSLocalisationPlugin_HPP__
+#ifndef ROMEA_LOCALISATION_GPS_GPS_LOCALISATION_PLUGIN_HPP_
+#define ROMEA_LOCALISATION_GPS_GPS_LOCALISATION_PLUGIN_HPP_
 
-//ros
+// std
+#include <string>
+#include <memory>
+
+// ros
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/imu.hpp>
 #include <nav_msgs/msg/odometry.hpp>
@@ -9,8 +13,8 @@
 #include <geometry_msgs/msg/transform_stamped.hpp>
 #include <tf2_ros/static_transform_broadcaster.h>
 
-//romea
-#include "visibility_control.h"
+// romea
+#include "romea_localisation_gps/visibility_control.h"
 #include <romea_core_localisation_gps/LocalisationGPSPlugin.hpp>
 #include <romea_localisation_utils/conversions/observation_position_conversions.hpp>
 #include <romea_localisation_utils/conversions/observation_course_conversions.hpp>
@@ -21,9 +25,7 @@ namespace romea {
 
 class GPSLocalisationPlugin
 {
-
 public:
-
   using OdometryMsg = nav_msgs::msg::Odometry;
   using NmeaSentenceMsg = nmea_msgs::msg::Sentence;
   using ObservationCourseStampedMsg = romea_localisation_msgs::msg::ObservationCourseStamped;
@@ -32,17 +34,16 @@ public:
 public :
 
   ROMEA_LOCALISATION_GPS_PUBLIC
-  GPSLocalisationPlugin(const rclcpp::NodeOptions & options);
+  explicit GPSLocalisationPlugin(const rclcpp::NodeOptions & options);
 
   ROMEA_LOCALISATION_GPS_PUBLIC
-  virtual ~GPSLocalisationPlugin()=default;
+  virtual ~GPSLocalisationPlugin() = default;
 
   ROMEA_LOCALISATION_GPS_PUBLIC
   rclcpp::node_interfaces::NodeBaseInterface::SharedPtr
   get_node_base_interface() const;
 
 protected:
-
   void declare_parameters_();
 
   void init_plugin_();
@@ -72,7 +73,7 @@ protected:
 
   void publish_position_(const rclcpp::Time &stamp, const std::string &frame_id);
 
-  void publish_course_(const rclcpp::Time &stamp,const std::string &frame_id);
+  void publish_course_(const rclcpp::Time &stamp, const std::string &frame_id);
 
   void advertise_map_to_world_tf_();
 
@@ -96,7 +97,6 @@ protected:
   tf2_ros::StaticTransformBroadcaster tf_broadcaster_;
 
   bool restamping_;
-
 };
 
 

@@ -53,40 +53,44 @@ void GPSLocalisationPlugin::declare_parameters_()
 //-----------------------------------------------------------------------------
 void GPSLocalisationPlugin::init_course_publisher_()
 {
-  node_->create_publisher<ObservationCourseStampedMsg>("course",sensor_data_qos());
+  node_->create_publisher<ObservationCourseStampedMsg>("course", sensor_data_qos());
 }
 
 //-----------------------------------------------------------------------------
 void GPSLocalisationPlugin::init_position_publisher_()
 {
-  node_->create_publisher<ObservationPosition2DStampedMsg>("position",sensor_data_qos());
+  node_->create_publisher<ObservationPosition2DStampedMsg>("position", sensor_data_qos());
 }
 
 //-----------------------------------------------------------------------------
 void GPSLocalisationPlugin::init_diagnostic_publisher_()
 {
-  diagnostic_pub_ = make_diagnostic_publisher<DiagnosticReport>(node_,node_->get_name(),1.0);
+  diagnostic_pub_ = make_diagnostic_publisher<DiagnosticReport>(node_, node_->get_name(), 1.0);
 }
 
 //-----------------------------------------------------------------------------
 void GPSLocalisationPlugin::init_nmea_subscriber_()
 {
   auto callback = std::bind(&GPSLocalisationPlugin::process_nmea_, this, std::placeholders::_1);
-  nmea_sub_ =node_->create_subscription<NmeaSentenceMsg>("gps/nmea_sentence",best_effort(1),callback);
+
+  nmea_sub_ = node_->create_subscription<NmeaSentenceMsg>(
+    "gps/nmea_sentence", best_effort(1), callback);
 }
 
 //-----------------------------------------------------------------------------
 void GPSLocalisationPlugin::init_odom_subscriber_()
 {
-  auto callback = std::bind(&GPSLocalisationPlugin::process_odom_,this,std::placeholders::_1);
-  odom_sub_ = node_->create_subscription<OdometryMsg>("vehicle_controller/odom",best_effort(1),callback);
+  auto callback  = std::bind(&GPSLocalisationPlugin::process_odom_, this, std::placeholders::_1);
+
+  odom_sub_ = node_->create_subscription<OdometryMsg>(
+    "vehicle_controller/odom", best_effort(1), callback);
 }
 
 //-----------------------------------------------------------------------------
 void GPSLocalisationPlugin::init_timer_()
 {
-  auto callback = std::bind(&GPSLocalisationPlugin::timer_callback_,this);
-  timer_ = node_->create_wall_timer(std::chrono::milliseconds(100),callback);
+  auto callback = std::bind(&GPSLocalisationPlugin::timer_callback_, this);
+  timer_ = node_->create_wall_timer(std::chrono::milliseconds(100), callback);
 }
 
 //-----------------------------------------------------------------------------
@@ -104,23 +108,26 @@ void GPSLocalisationPlugin::init_plugin_()
                                                     get_minimal_speed_over_ground(node_));
 
   auto wgs84_anchor = get_wgs84_anchor(node_);
-  if(wgs84_anchor.has_value())
+  if (wgs84_anchor.has_value())
   {
     plugin_->setAnchor(wgs84_anchor.value());
     advertise_map_to_world_tf_();
   }
 
-  restamping_ = get_parameter<bool>(node_,"restamping");
+  restamping_ = get_parameter<bool>(node_, "restamping");
 }
 
 
 //-----------------------------------------------------------------------------
 void GPSLocalisationPlugin::advertise_map_to_world_tf_()
 {
-  tf_world_to_map_.header.frame_id="world";
-  tf_world_to_map_.child_frame_id= "map";
+  tf_world_to_map_.header.frame_id = "world";
+  tf_world_to_map_.child_frame_id = "map";
   tf_world_to_map_.header.stamp = node_->get_clock()->now();
-  to_ros_transform_msg(plugin_->getENUConverter().getEnuToEcefTransform(),tf_world_to_map_.transform);
+
+  to_ros_transform_msg(plugin_->getENUConverter().getEnuToEcefTransform(),
+                       tf_world_to_map_.transform);
+
   tf_broadcaster_.sendTransform(tf_world_to_map_);
 }
 
@@ -135,13 +142,14 @@ void GPSLocalisationPlugin::process_odom_(OdometryMsg::ConstSharedPtr msg)
 void GPSLocalisationPlugin::process_gga_(const NmeaSentenceMsg & msg)
 {
   //  std::cout << " process GGA " <<std::endl;
-  auto stamp = restamping_ ? node_->get_clock()->now() : rclcpp::Time(msg.header.stamp.sec, msg.header.stamp.nanosec);
+  auto stamp = restamping_ ? node_->get_clock()->now() :
+    rclcpp::Time(msg.header.stamp.sec, msg.header.stamp.nanosec);
 
-  if(plugin_->processGGA(to_romea_duration(stamp),
-                         msg.sentence,
-                         position_observation_))
+  if (plugin_->processGGA(to_romea_duration(stamp),
+                          msg.sentence,
+                          position_observation_))
   {
-    publish_position_(stamp,"map");
+    publish_position_(stamp, "map");
     advertise_map_to_world_tf_();
   }
 }
@@ -151,7 +159,7 @@ void GPSLocalisationPlugin::publish_position_(const rclcpp::Time & stamp,
                                               const std::string & frame_id)
 {
   auto position_msg = std::make_unique<ObservationPosition2DStampedMsg>();
-  to_ros_msg(stamp,frame_id,position_observation_,*position_msg);
+  to_ros_msg(stamp, frame_id, position_observation_, *position_msg);
   position_pub_->publish(std::move(position_msg));
 }
 
@@ -159,13 +167,14 @@ void GPSLocalisationPlugin::publish_position_(const rclcpp::Time & stamp,
 void GPSLocalisationPlugin::process_rmc_(const NmeaSentenceMsg & msg)
 {
   //  std::cout << " process RMC "<<std::endl;
-  auto stamp = restamping_ ? node_->get_clock()->now() : rclcpp::Time(msg.header.stamp.sec, msg.header.stamp.nanosec);
+  auto stamp = restamping_ ? node_->get_clock()->now() :
+    rclcpp::Time(msg.header.stamp.sec, msg.header.stamp.nanosec);
 
-  if(plugin_->processRMC(to_romea_duration(stamp),
-                         msg.sentence,
-                         course_observation_))
+  if (plugin_->processRMC(to_romea_duration(stamp),
+                          msg.sentence,
+                          course_observation_))
   {
-    publish_course_(stamp,msg.header.frame_id);
+    publish_course_(stamp, msg.header.frame_id);
   }
 }
 
@@ -174,7 +183,7 @@ void GPSLocalisationPlugin::publish_course_(const rclcpp::Time & stamp,
                                             const std::string & frame_id)
 {
   auto course_msg = std::make_unique<ObservationCourseStampedMsg>();
-  to_ros_msg(stamp,frame_id,course_observation_,*course_msg);
+  to_ros_msg(stamp, frame_id, course_observation_, *course_msg);
   course_pub_->publish(std::move(course_msg));
 }
 
@@ -187,7 +196,6 @@ void GPSLocalisationPlugin::process_gsv_(const NmeaSentenceMsg & msg)
 //-----------------------------------------------------------------------------
 void GPSLocalisationPlugin::process_nmea_(NmeaSentenceMsg::ConstSharedPtr msg)
 {
-
   //  std::cout << " processNmea "<< std::endl;
   switch (NMEAParsing::extractSentenceId(msg->sentence))
   {
@@ -209,9 +217,10 @@ void GPSLocalisationPlugin::process_nmea_(NmeaSentenceMsg::ConstSharedPtr msg)
 void GPSLocalisationPlugin::timer_callback_()
 {
   auto stamp = node_->get_clock()->now();
-  diagnostic_pub_->publish(stamp,plugin_->makeDiagnosticReport(to_romea_duration(stamp)));
+  diagnostic_pub_->publish(stamp, plugin_->makeDiagnosticReport(to_romea_duration(stamp)));
 }
-}
+
+}  // namespace romea
 
 //-----------------------------------------------------------------------------
 #include <rclcpp_components/register_node_macro.hpp>

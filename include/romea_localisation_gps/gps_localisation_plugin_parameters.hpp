@@ -1,19 +1,18 @@
-#ifndef _romea_GPSLocalisationPluginParameters_hpp_
-#define _romea_GPSLocalisationPluginParameters_hpp_
+#ifndef ROMEA_LOCALISATION_GPS_GPS_LOCALISATION_PLUGIN_PARAMETERS_HPP_
+#define ROMEA_LOCALISATION_GPS_GPS_LOCALISATION_PLUGIN_PARAMETERS_HPP_
 
-//ros
+// ros
 #include <rclcpp/node.hpp>
 
-//eigen
+// eigen
 #include <Eigen/Geometry>
 
-//romea
+// romea
 #include <romea_core_gps/nmea/NMEAFixQuality.hpp>
 #include <romea_core_common/geodesy/GeodeticCoordinates.hpp>
 
 namespace romea
 {
-
 
 void declare_restamping(rclcpp::Node::SharedPtr node);
 void declare_minimal_fix_quality(rclcpp::Node::SharedPtr node);
@@ -39,8 +38,6 @@ double get_gps_rtk_fix_eure(rclcpp::Node::SharedPtr node);
 double get_gps_simulation_fix_eure(rclcpp::Node::SharedPtr node);
 Eigen::Vector3d get_gps_antenna_body_position(rclcpp::Node::SharedPtr node);
 
+}  // namespace romea
 
-
-}
-
-#endif
+#endif  // ROMEA_LOCALISATION_GPS_GPS_LOCALISATION_PLUGIN_PARAMETERS_HPP_
