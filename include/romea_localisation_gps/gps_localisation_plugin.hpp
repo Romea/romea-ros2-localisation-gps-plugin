@@ -1,9 +1,8 @@
-#ifndef ROMEA_LOCALISATION_GPS_GPS_LOCALISATION_PLUGIN_HPP_
-#define ROMEA_LOCALISATION_GPS_GPS_LOCALISATION_PLUGIN_HPP_
+// Copyright 2022 INRAE, French National Research Institute for Agriculture, Food and Environment
+// Add license
 
-// std
-#include <string>
-#include <memory>
+#ifndef ROMEA_LOCALISATION_GPS__GPS_LOCALISATION_PLUGIN_HPP_
+#define ROMEA_LOCALISATION_GPS__GPS_LOCALISATION_PLUGIN_HPP_
 
 // ros
 #include <rclcpp/rclcpp.hpp>
@@ -14,25 +13,33 @@
 #include <tf2_ros/static_transform_broadcaster.h>
 
 // romea
-#include "romea_localisation_gps/visibility_control.h"
 #include <romea_core_localisation_gps/LocalisationGPSPlugin.hpp>
 #include <romea_localisation_utils/conversions/observation_position_conversions.hpp>
 #include <romea_localisation_utils/conversions/observation_course_conversions.hpp>
 #include <romea_common_utils/conversions/diagnostic_conversions.hpp>
 #include <romea_common_utils/publishers/diagnostic_publisher.hpp>
 
-namespace romea {
+// std
+#include <string>
+#include <memory>
+
+// local
+#include "romea_localisation_gps/visibility_control.h"
+
+namespace romea
+{
 
 class GPSLocalisationPlugin
 {
 public:
   using OdometryMsg = nav_msgs::msg::Odometry;
   using NmeaSentenceMsg = nmea_msgs::msg::Sentence;
-  using ObservationCourseStampedMsg = romea_localisation_msgs::msg::ObservationCourseStamped;
-  using ObservationPosition2DStampedMsg = romea_localisation_msgs::msg::ObservationPosition2DStamped;
+  using ObservationCourseStampedMsg =
+    romea_localisation_msgs::msg::ObservationCourseStamped;
+  using ObservationPosition2DStampedMsg =
+    romea_localisation_msgs::msg::ObservationPosition2DStamped;
 
-public :
-
+public:
   ROMEA_LOCALISATION_GPS_PUBLIC
   explicit GPSLocalisationPlugin(const rclcpp::NodeOptions & options);
 
@@ -71,16 +78,15 @@ protected:
 
   void process_gsv_(const NmeaSentenceMsg & msg);
 
-  void publish_position_(const rclcpp::Time &stamp, const std::string &frame_id);
+  void publish_position_(const rclcpp::Time & stamp, const std::string & frame_id);
 
-  void publish_course_(const rclcpp::Time &stamp, const std::string &frame_id);
+  void publish_course_(const rclcpp::Time & stamp, const std::string & frame_id);
 
   void advertise_map_to_world_tf_();
 
   void timer_callback_();
 
 protected:
-
   rclcpp::Node::SharedPtr node_;
   std::unique_ptr<romea::LocalisationGPSPlugin> plugin_;
   romea::ObservationPosition position_observation_;
@@ -99,8 +105,6 @@ protected:
   bool restamping_;
 };
 
+}  // namespace romea
 
-
-}
-
-#endif
+#endif  // ROMEA_LOCALISATION_GPS__GPS_LOCALISATION_PLUGIN_HPP_
