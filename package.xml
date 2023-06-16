@@ -3,12 +3,13 @@
 <package format="3">
 
   <name>romea_gps_localisation_plugin</name>
+
   <version>0.0.0</version>
+
   <description>Package romea_gps_localisation_plugin description</description>
 
-  <author email="jean.laneurit@inrae.fr">Jean Laneurit</author>
   <maintainer email="jean.laneurit@inrae.fr">Jean Laneurit</maintainer>
-  <license>TODO: License declaration</license>
+  <license>Apache License 2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
@@ -18,6 +19,7 @@
   <depend>romea_core_localisation</depend>
   <depend>romea_core_localisation_gps</depend>
   <depend>romea_common_utils</depend>
+  <depend>romea_gps_utils</depend>
   <depend>romea_localisation_msgs</depend>
   <depend>romea_localisation_utils</depend>
   <depend>nmea_msgs</depend>
