@@ -19,6 +19,7 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rclcpp_components REQUIRED)
 find_package(romea_core_common REQUIRED)
 find_package(romea_core_gps REQUIRED)
 find_package(romea_core_localisation REQUIRED)
@@ -43,6 +44,7 @@ target_compile_definitions(${PROJECT_NAME}
 
 ament_target_dependencies(${PROJECT_NAME}
   rclcpp
+  rclcpp_components
   romea_core_common
   romea_core_gps
   romea_core_localisation
@@ -114,7 +116,6 @@ if(BUILD_TESTING)
   list(APPEND AMENT_LINT_AUTO_EXCLUDE ament_cmake_copyright)
   ament_lint_auto_find_test_dependencies()
   #  add_subdirectory(test)
-
 endif()
 
 ament_package()
