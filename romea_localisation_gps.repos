@@ -41,3 +41,8 @@ repositories:
         type: git
         url: git@gitlab-ssh.irstea.fr:romea_ros2/algorithms/localisation/romea_localisation_gps.git
         version: devel
+
+    third_party/serial:
+        type: git
+        url: https://github.com/Romea/serial-ros2.git
+        version: romea
