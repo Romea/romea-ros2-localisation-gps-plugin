@@ -24,7 +24,7 @@
 #include <memory>
 
 // local
-#include "romea_localisation_gps/visibility_control.h"
+#include "romea_localisation_gps_plugin/visibility_control.h"
 
 namespace romea
 {

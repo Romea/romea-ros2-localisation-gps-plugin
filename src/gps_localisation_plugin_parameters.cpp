@@ -11,7 +11,7 @@
 #include "romea_common_utils/params/geodesy_parameters.hpp"
 
 // local
-#include "romea_localisation_gps/gps_localisation_plugin_parameters.hpp"
+#include "romea_localisation_gps_plugin/gps_localisation_plugin_parameters.hpp"
 
 namespace
 {

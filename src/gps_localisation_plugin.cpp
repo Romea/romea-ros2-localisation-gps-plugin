@@ -7,8 +7,8 @@
 #include <utility>
 
 // romea ros
-#include "romea_localisation_gps/gps_localisation_plugin_parameters.hpp"
-#include "romea_localisation_gps/gps_localisation_plugin.hpp"
+#include "romea_localisation_gps_plugin/gps_localisation_plugin_parameters.hpp"
+#include "romea_localisation_gps_plugin/gps_localisation_plugin.hpp"
 #include "romea_common_utils/conversions/time_conversions.hpp"
 #include "romea_common_utils/conversions/transform_conversions.hpp"
 #include "romea_common_utils/params/node_parameters.hpp"
