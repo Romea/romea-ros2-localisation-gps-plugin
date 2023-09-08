@@ -31,8 +31,8 @@ GPSLocalisationPlugin::GPSLocalisationPlugin(const rclcpp::NodeOptions & options
   position_pub_(nullptr),
   diagnostic_pub_(nullptr),
   timer_(),
-  tf_world_to_map_(),
-  tf_broadcaster_(node_),
+  // tf_world_to_map_(),
+  // tf_broadcaster_(node_),
   restamping_(false)
 {
   declare_parameters_();
@@ -129,29 +129,33 @@ void GPSLocalisationPlugin::init_plugin_()
     get_minimal_fix_quality(node_),
     get_minimal_speed_over_ground(node_));
 
-  auto wgs84_anchor = get_wgs84_anchor(node_);
-  if (wgs84_anchor.has_value()) {
-    plugin_->setAnchor(wgs84_anchor.value());
-    advertise_map_to_world_tf_();
-  }
+  // auto wgs84_anchor = get_wgs84_anchor(node_);
+  // if (wgs84_anchor.has_value()) {
+  //   plugin_->setAnchor(wgs84_anchor.value());
+  //   advertise_map_to_world_tf_();
+  // }
+
+  std::cout << " gps plugin coucou " << std::endl;
+  plugin_->setAnchor(get_wgs84_anchor(node_));
+  std::cout << " gps plugin coucou " << std::endl;
 
   restamping_ = get_parameter<bool>(node_, "restamping");
 }
 
 
-//-----------------------------------------------------------------------------
-void GPSLocalisationPlugin::advertise_map_to_world_tf_()
-{
-  tf_world_to_map_.header.frame_id = "world";
-  tf_world_to_map_.child_frame_id = "map";
-  tf_world_to_map_.header.stamp = node_->get_clock()->now();
+// //-----------------------------------------------------------------------------
+// void GPSLocalisationPlugin::advertise_map_to_world_tf_()
+// {
+//   tf_world_to_map_.header.frame_id = "world";
+//   tf_world_to_map_.child_frame_id = "map";
+//   tf_world_to_map_.header.stamp = node_->get_clock()->now();
 
-  to_ros_transform_msg(
-    plugin_->getENUConverter().getEnuToEcefTransform(),
-    tf_world_to_map_.transform);
+//   to_ros_transform_msg(
+//     plugin_->getENUConverter().getEnuToEcefTransform(),
+//     tf_world_to_map_.transform);
 
-  tf_broadcaster_.sendTransform(tf_world_to_map_);
-}
+//   tf_broadcaster_.sendTransform(tf_world_to_map_);
+// }
 
 //-----------------------------------------------------------------------------
 void GPSLocalisationPlugin::process_odom_(OdometryMsg::ConstSharedPtr msg)
@@ -174,7 +178,7 @@ void GPSLocalisationPlugin::process_gga_(const NmeaSentenceMsg & msg)
       position_observation_))
   {
     publish_position_(stamp, "map");
-    advertise_map_to_world_tf_();
+    // advertise_map_to_world_tf_();
   }
 }
 

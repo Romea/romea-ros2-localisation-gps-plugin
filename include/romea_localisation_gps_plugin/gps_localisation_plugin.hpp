@@ -10,7 +10,7 @@
 #include <nav_msgs/msg/odometry.hpp>
 #include <nmea_msgs/msg/sentence.hpp>
 #include <geometry_msgs/msg/transform_stamped.hpp>
-#include <tf2_ros/static_transform_broadcaster.h>
+// #include <tf2_ros/static_transform_broadcaster.h>
 
 // romea
 #include <romea_core_localisation_gps/LocalisationGPSPlugin.hpp>
@@ -82,7 +82,7 @@ protected:
 
   void publish_course_(const rclcpp::Time & stamp, const std::string & frame_id);
 
-  void advertise_map_to_world_tf_();
+  // void advertise_map_to_world_tf_();
 
   void timer_callback_();
 
@@ -99,8 +99,8 @@ protected:
   std::shared_ptr<StampedPublisherBase<DiagnosticReport>> diagnostic_pub_;
   rclcpp::TimerBase::SharedPtr timer_;
 
-  geometry_msgs::msg::TransformStamped tf_world_to_map_;
-  tf2_ros::StaticTransformBroadcaster tf_broadcaster_;
+  // geometry_msgs::msg::TransformStamped tf_world_to_map_;
+  // tf2_ros::StaticTransformBroadcaster tf_broadcaster_;
 
   bool restamping_;
 };

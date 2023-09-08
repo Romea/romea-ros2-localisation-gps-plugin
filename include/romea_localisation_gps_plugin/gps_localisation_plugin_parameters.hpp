@@ -28,7 +28,7 @@ void declare_wgs84_anchor(rclcpp::Node::SharedPtr node);
 bool get_restamping(rclcpp::Node::SharedPtr node);
 FixQuality get_minimal_fix_quality(rclcpp::Node::SharedPtr node);
 double get_minimal_speed_over_ground(rclcpp::Node::SharedPtr node);
-std::optional<GeodeticCoordinates> get_wgs84_anchor(rclcpp::Node::SharedPtr node);
+GeodeticCoordinates get_wgs84_anchor(rclcpp::Node::SharedPtr node);
 
 // void declare_gps_gps_fix_eure(rclcpp::Node::SharedPtr node);
 // void declare_gps_dgps_fix_eure(rclcpp::Node::SharedPtr node);

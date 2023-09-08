@@ -61,9 +61,7 @@ void declare_minimal_speed_over_ground(rclcpp::Node::SharedPtr node)
 //----------------------------------------------------------------------------
 void declare_wgs84_anchor(rclcpp::Node::SharedPtr node)
 {
-  declare_geodetic_coordinates_parameter_with_default(
-    node, wgs84_anchor_param_name,
-    GeodeticCoordinates());
+  declare_geodetic_coordinates_parameter(node, wgs84_anchor_param_name);
 }
 
 //----------------------------------------------------------------------------
@@ -85,17 +83,9 @@ double get_minimal_speed_over_ground(rclcpp::Node::SharedPtr node)
 }
 
 //----------------------------------------------------------------------------
-std::optional<GeodeticCoordinates> get_wgs84_anchor(rclcpp::Node::SharedPtr node)
+GeodeticCoordinates get_wgs84_anchor(rclcpp::Node::SharedPtr node)
 {
-  auto wgs84_anchor = get_geodetic_coordinates_parameter(node, wgs84_anchor_param_name);
-  if (std::abs(wgs84_anchor.latitude) > std::numeric_limits<double>::epsilon() &&
-    std::abs(wgs84_anchor.longitude) > std::numeric_limits<double>::epsilon() &&
-    std::abs(wgs84_anchor.altitude) > std::numeric_limits<double>::epsilon())
-  {
-    return wgs84_anchor;
-  } else {
-    return std::nullopt;
-  }
+  return get_geodetic_coordinates_parameter(node, wgs84_anchor_param_name);
 }
 
 
