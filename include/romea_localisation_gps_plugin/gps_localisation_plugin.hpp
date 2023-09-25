@@ -1,27 +1,28 @@
 // Copyright 2022 INRAE, French National Research Institute for Agriculture, Food and Environment
 // Add license
 
-#ifndef ROMEA_LOCALISATION_GPS__GPS_LOCALISATION_PLUGIN_HPP_
-#define ROMEA_LOCALISATION_GPS__GPS_LOCALISATION_PLUGIN_HPP_
-
-// ros
-#include <rclcpp/rclcpp.hpp>
-#include <sensor_msgs/msg/imu.hpp>
-#include <nav_msgs/msg/odometry.hpp>
-#include <nmea_msgs/msg/sentence.hpp>
-#include <geometry_msgs/msg/transform_stamped.hpp>
-// #include <tf2_ros/static_transform_broadcaster.h>
-
-// romea
-#include <romea_core_localisation_gps/LocalisationGPSPlugin.hpp>
-#include <romea_localisation_utils/conversions/observation_position_conversions.hpp>
-#include <romea_localisation_utils/conversions/observation_course_conversions.hpp>
-#include <romea_common_utils/conversions/diagnostic_conversions.hpp>
-#include <romea_common_utils/publishers/diagnostic_publisher.hpp>
+#ifndef ROMEA_LOCALISATION_GPS_PLUGIN__GPS_LOCALISATION_PLUGIN_HPP_
+#define ROMEA_LOCALISATION_GPS_PLUGIN__GPS_LOCALISATION_PLUGIN_HPP_
 
 // std
 #include <string>
 #include <memory>
+
+// ros
+#include "rclcpp/rclcpp.hpp"
+#include "sensor_msgs/msg/imu.hpp"
+#include "nav_msgs/msg/odometry.hpp"
+#include "nmea_msgs/msg/sentence.hpp"
+#include "geometry_msgs/msg/transform_stamped.hpp"
+// #include <tf2_ros/static_transform_broadcaster.h>
+
+// romea
+#include "romea_core_localisation_gps/LocalisationGPSPlugin.hpp"
+#include "romea_localisation_utils/conversions/observation_position_conversions.hpp"
+#include "romea_localisation_utils/conversions/observation_course_conversions.hpp"
+#include "romea_common_utils/conversions/diagnostic_conversions.hpp"
+#include "romea_common_utils/publishers/diagnostic_publisher.hpp"
+
 
 // local
 #include "romea_localisation_gps_plugin/visibility_control.h"
@@ -40,13 +41,13 @@ public:
     romea_localisation_msgs::msg::ObservationPosition2DStamped;
 
 public:
-  ROMEA_LOCALISATION_GPS_PUBLIC
+  ROMEA_LOCALISATION_GPS_PLUGIN_PUBLIC
   explicit GPSLocalisationPlugin(const rclcpp::NodeOptions & options);
 
-  ROMEA_LOCALISATION_GPS_PUBLIC
+  ROMEA_LOCALISATION_GPS_PLUGIN_PUBLIC
   virtual ~GPSLocalisationPlugin() = default;
 
-  ROMEA_LOCALISATION_GPS_PUBLIC
+  ROMEA_LOCALISATION_GPS_PLUGIN_PUBLIC
   rclcpp::node_interfaces::NodeBaseInterface::SharedPtr
   get_node_base_interface() const;
 
@@ -107,4 +108,4 @@ protected:
 
 }  // namespace romea
 
-#endif  // ROMEA_LOCALISATION_GPS__GPS_LOCALISATION_PLUGIN_HPP_
+#endif  // ROMEA_LOCALISATION_GPS_PLUGIN__GPS_LOCALISATION_PLUGIN_HPP_

@@ -1,17 +1,17 @@
 // Copyright 2022 INRAE, French National Research Institute for Agriculture, Food and Environment
 // Add license
 
-#ifndef ROMEA_LOCALISATION_GPS__GPS_LOCALISATION_PLUGIN_PARAMETERS_HPP_
-#define ROMEA_LOCALISATION_GPS__GPS_LOCALISATION_PLUGIN_PARAMETERS_HPP_
+#ifndef ROMEA_LOCALISATION_GPS_PLUGIN__GPS_LOCALISATION_PLUGIN_PARAMETERS_HPP_
+#define ROMEA_LOCALISATION_GPS_PLUGIN__GPS_LOCALISATION_PLUGIN_PARAMETERS_HPP_
+
+// eigen
+#include <Eigen/Geometry>
 
 // std
 #include <optional>
 
 // ros
-#include <rclcpp/node.hpp>
-
-// eigen
-#include <Eigen/Geometry>
+#include "rclcpp/node.hpp"
 
 // romea
 #include "romea_core_gps/nmea/NMEAFixQuality.hpp"
@@ -46,4 +46,4 @@ GeodeticCoordinates get_wgs84_anchor(rclcpp::Node::SharedPtr node);
 
 }  // namespace romea
 
-#endif  // ROMEA_LOCALISATION_GPS__GPS_LOCALISATION_PLUGIN_PARAMETERS_HPP_
+#endif  // ROMEA_LOCALISATION_GPS_PLUGIN__GPS_LOCALISATION_PLUGIN_PARAMETERS_HPP_
