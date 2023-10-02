@@ -1,6 +1,6 @@
 # 1 Overview #
 
-This package is a gps plugin for vehicle localisation. It takes NMEA data coming from gps in order to provide a position and course angle with respect of a local tangent plane ENU reference frame.
+This package is a gps plugin for robot localisation. It takes NMEA data coming from gps in order to provide a position and course angle observations with respect of a local tangent plane ENU reference frame.
 
 # 2 Node #
 
