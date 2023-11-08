@@ -25,7 +25,6 @@
 #include "nav_msgs/msg/odometry.hpp"
 #include "nmea_msgs/msg/sentence.hpp"
 #include "geometry_msgs/msg/transform_stamped.hpp"
-// #include <tf2_ros/static_transform_broadcaster.h>
 
 // romea
 #include "romea_core_localisation_gps/LocalisationGPSPlugin.hpp"
@@ -41,7 +40,8 @@
 namespace romea
 {
 
-class GPSLocalisationPlugin
+template<typename CorePlugin>
+class GPSLocalisationPluginBase
 {
 public:
   using OdometryMsg = nav_msgs::msg::Odometry;
@@ -53,10 +53,10 @@ public:
 
 public:
   ROMEA_LOCALISATION_GPS_PLUGIN_PUBLIC
-  explicit GPSLocalisationPlugin(const rclcpp::NodeOptions & options);
+  explicit GPSLocalisationPluginBase(const rclcpp::NodeOptions & options);
 
   ROMEA_LOCALISATION_GPS_PLUGIN_PUBLIC
-  virtual ~GPSLocalisationPlugin() = default;
+  virtual ~GPSLocalisationPluginBase() = default;
 
   ROMEA_LOCALISATION_GPS_PLUGIN_PUBLIC
   rclcpp::node_interfaces::NodeBaseInterface::SharedPtr
@@ -67,40 +67,37 @@ protected:
 
   void init_plugin_();
 
-  void init_course_publisher_();
+  void init_nmea_subscriber_();
 
   void init_position_publisher_();
 
   void init_diagnostic_publisher_();
 
-  void init_nmea_subscriber_();
-
   void init_odom_subscriber_();
 
-  void init_timer_();
+  void init_course_publisher_();
 
+  void init_timer_();
 
   void process_nmea_(NmeaSentenceMsg::ConstSharedPtr msg);
 
   void process_odom_(OdometryMsg::ConstSharedPtr msg);
 
-  void process_gga_(const NmeaSentenceMsg & msg);
+  void process_position_(const NmeaSentenceMsg & msg);
 
-  void process_rmc_(const NmeaSentenceMsg & msg);
+  void process_course_(const NmeaSentenceMsg & msg);
 
-  void process_gsv_(const NmeaSentenceMsg & msg);
+  void process_satellites_view_(const NmeaSentenceMsg & msg);
 
   void publish_position_(const rclcpp::Time & stamp, const std::string & frame_id);
 
   void publish_course_(const rclcpp::Time & stamp, const std::string & frame_id);
 
-  // void advertise_map_to_world_tf_();
-
   void timer_callback_();
 
 protected:
   rclcpp::Node::SharedPtr node_;
-  std::unique_ptr<romea::LocalisationGPSPlugin> plugin_;
+  std::unique_ptr<CorePlugin> plugin_;
   romea::ObservationPosition position_observation_;
   romea::ObservationCourse course_observation_;
 
@@ -111,11 +108,13 @@ protected:
   std::shared_ptr<StampedPublisherBase<DiagnosticReport>> diagnostic_pub_;
   rclcpp::TimerBase::SharedPtr timer_;
 
-  // geometry_msgs::msg::TransformStamped tf_world_to_map_;
-  // tf2_ros::StaticTransformBroadcaster tf_broadcaster_;
-
   bool restamping_;
 };
+
+using SingleAntennaGPSLocalisationPlugin =
+  GPSLocalisationPluginBase<LocalisationSingleAntennaGPSPlugin>;
+using DualAntennaGPSLocalisationPlugin =
+  GPSLocalisationPluginBase<LocalisationDualAntennaGPSPlugin>;
 
 }  // namespace romea
 

@@ -33,33 +33,59 @@ def get_plugin_configuration(context):
 def get_component_container(context):
     return LaunchConfiguration("component_container").perform(context)
 
+def has_double_antenna(context):
+    return eval(LaunchConfiguration("dual_antenna").perform(context))
+
 
 def launch_setup(context, *args, **kwargs):
     plugin_name = get_plugin_name(context)
     plugin_configuration = get_plugin_configuration(context)
     component_container = get_component_container(context)
 
-    if not component_container:
-        node = Node(
-            package="romea_localisation_gps_plugin",
-            executable="gps_localisation_plugin_node",
-            name=plugin_name,
-            parameters=[plugin_configuration],
-        )
-        return [node]
-    else:
-        composable_node = ComposableNode(
+    if has_double_antenna(context):
+        if not component_container:
+            node = Node(
                 package="romea_localisation_gps_plugin",
-                plugin="romea::GPSLocalisationPlugin",
+                executable="dual_antenna_gps_localisation_plugin_node",
                 name=plugin_name,
                 parameters=[plugin_configuration],
             )
+            return [node]
+        else:
+            composable_node = ComposableNode(
+                    package="romea_single_localisation_gps_plugin",
+                    plugin="romea::DualAntennaGPSLocalisationPlugin",
+                    name=plugin_name,
+                    parameters=[plugin_configuration],
+                )
 
-        load_component = LoadComposableNodes(
-            composable_node_descriptions=[composable_node],
-            target_container=component_container),
+            load_component = LoadComposableNodes(
+                composable_node_descriptions=[composable_node],
+                target_container=component_container),
 
-        return list(load_component)
+            return list(load_component)
+    else:    
+        if not component_container:
+            node = Node(
+                package="romea_localisation_gps_plugin",
+                executable="single_antenna_gps_localisation_plugin_node",
+                name=plugin_name,
+                parameters=[plugin_configuration],
+            )
+            return [node]
+        else:
+            composable_node = ComposableNode(
+                    package="romea_single_localisation_gps_plugin",
+                    plugin="romea::SingleAntennaGPSLocalisationPlugin",
+                    name=plugin_name,
+                    parameters=[plugin_configuration],
+                )
+
+            load_component = LoadComposableNodes(
+                composable_node_descriptions=[composable_node],
+                target_container=component_container),
+
+            return list(load_component)
 
 
 def generate_launch_description():
@@ -71,5 +97,7 @@ def generate_launch_description():
     declared_arguments.append(DeclareLaunchArgument("plugin_configuration_file_path"))
 
     declared_arguments.append(DeclareLaunchArgument("component_container", default_value=""))
+
+    declared_arguments.append(DeclareLaunchArgument("dual_antenna", default_value="False"))
 
     return LaunchDescription(declared_arguments + [OpaqueFunction(function=launch_setup)])
