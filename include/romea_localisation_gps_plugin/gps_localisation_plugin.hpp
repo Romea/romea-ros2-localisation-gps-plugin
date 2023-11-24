@@ -39,6 +39,8 @@
 
 namespace romea
 {
+namespace ros2
+{
 
 template<typename CorePlugin>
 class GPSLocalisationPluginBase
@@ -98,24 +100,25 @@ protected:
 protected:
   rclcpp::Node::SharedPtr node_;
   std::unique_ptr<CorePlugin> plugin_;
-  romea::ObservationPosition position_observation_;
-  romea::ObservationCourse course_observation_;
+  core::ObservationPosition position_observation_;
+  core::ObservationCourse course_observation_;
 
   rclcpp::Subscription<NmeaSentenceMsg>::SharedPtr nmea_sub_;
   rclcpp::Subscription<OdometryMsg>::SharedPtr odom_sub_;
   rclcpp::Publisher<ObservationCourseStampedMsg>::SharedPtr course_pub_;
   rclcpp::Publisher<ObservationPosition2DStampedMsg>::SharedPtr position_pub_;
-  std::shared_ptr<StampedPublisherBase<DiagnosticReport>> diagnostic_pub_;
+  std::shared_ptr<StampedPublisherBase<core::DiagnosticReport>> diagnostic_pub_;
   rclcpp::TimerBase::SharedPtr timer_;
 
   bool restamping_;
 };
 
 using SingleAntennaGPSLocalisationPlugin =
-  GPSLocalisationPluginBase<LocalisationSingleAntennaGPSPlugin>;
+  GPSLocalisationPluginBase<core::LocalisationSingleAntennaGPSPlugin>;
 using DualAntennaGPSLocalisationPlugin =
-  GPSLocalisationPluginBase<LocalisationDualAntennaGPSPlugin>;
+  GPSLocalisationPluginBase<core::LocalisationDualAntennaGPSPlugin>;
 
+}  // namespace ros2
 }  // namespace romea
 
 #endif  // ROMEA_LOCALISATION_GPS_PLUGIN__GPS_LOCALISATION_PLUGIN_HPP_

@@ -29,7 +29,7 @@ namespace
 
 const double DEFAULT_MINIMAL_SPEED_OVER_GROUND = 0.8;
 // const double DEFAULT_MINIMAL_CONSTELLATION_RELIABILITY = 0.8;
-const romea::FixQuality DEFAULT_MINIMAL_FIX_QUALITY = romea::FixQuality::RTK_FIX;
+const romea::core::FixQuality DEFAULT_MINIMAL_FIX_QUALITY = romea::core::FixQuality::RTK_FIX;
 
 const char restamping_param_name[] = "restamping";
 const char minimal_fix_quality_param_name[] = "minimal_fix_quality";
@@ -45,6 +45,8 @@ const char wgs84_anchor_param_name[] = "wgs84_anchor";
 }  // namespace
 
 namespace romea
+{
+namespace ros2
 {
 
 //-----------------------------------------------------------------------------
@@ -82,9 +84,9 @@ bool get_restamping(rclcpp::Node::SharedPtr node)
 }
 
 //----------------------------------------------------------------------------
-FixQuality get_minimal_fix_quality(rclcpp::Node::SharedPtr node)
+core::FixQuality get_minimal_fix_quality(rclcpp::Node::SharedPtr node)
 {
-  return static_cast<FixQuality>(get_parameter<int>(node, minimal_fix_quality_param_name));
+  return static_cast<core::FixQuality>(get_parameter<int>(node, minimal_fix_quality_param_name));
 }
 
 //----------------------------------------------------------------------------
@@ -94,7 +96,7 @@ double get_minimal_speed_over_ground(rclcpp::Node::SharedPtr node)
 }
 
 //----------------------------------------------------------------------------
-GeodeticCoordinates get_wgs84_anchor(rclcpp::Node::SharedPtr node)
+core::GeodeticCoordinates get_wgs84_anchor(rclcpp::Node::SharedPtr node)
 {
   return get_geodetic_coordinates_parameter(node, wgs84_anchor_param_name);
 }
@@ -173,4 +175,5 @@ GeodeticCoordinates get_wgs84_anchor(rclcpp::Node::SharedPtr node)
 //   return get_eigen_xyz_vector_parameter<Eigen::Vector3d>(node, "gps");
 // }
 
+}  // namespace ros2
 }  // namespace romea

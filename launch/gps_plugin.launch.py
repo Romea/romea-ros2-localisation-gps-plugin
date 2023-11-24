@@ -54,7 +54,7 @@ def launch_setup(context, *args, **kwargs):
         else:
             composable_node = ComposableNode(
                     package="romea_single_localisation_gps_plugin",
-                    plugin="romea::DualAntennaGPSLocalisationPlugin",
+                    plugin="romea::ros2::DualAntennaGPSLocalisationPlugin",
                     name=plugin_name,
                     parameters=[plugin_configuration],
                 )
@@ -76,7 +76,7 @@ def launch_setup(context, *args, **kwargs):
         else:
             composable_node = ComposableNode(
                     package="romea_single_localisation_gps_plugin",
-                    plugin="romea::SingleAntennaGPSLocalisationPlugin",
+                    plugin="romea::ros2::SingleAntennaGPSLocalisationPlugin",
                     name=plugin_name,
                     parameters=[plugin_configuration],
                 )

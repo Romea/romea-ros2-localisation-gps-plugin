@@ -57,12 +57,12 @@ ament_target_dependencies(${PROJECT_NAME}
   nav_msgs)
 
 rclcpp_components_register_node(${PROJECT_NAME}
-  PLUGIN "romea::SingleAntennaGPSLocalisationPlugin"
+  PLUGIN "romea::ros2::SingleAntennaGPSLocalisationPlugin"
   EXECUTABLE single_antenna_gps_localisation_plugin_node
 )
 
 rclcpp_components_register_node(${PROJECT_NAME}
-  PLUGIN "romea::DualAntennaGPSLocalisationPlugin"
+  PLUGIN "romea::ros2::DualAntennaGPSLocalisationPlugin"
   EXECUTABLE dual_antenna_gps_localisation_plugin_node
 )
 
