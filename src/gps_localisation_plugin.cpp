@@ -221,8 +221,8 @@ void GPSLocalisationPluginBase<CorePlugin>::init_timer_()
 template<typename CorePlugin>
 void GPSLocalisationPluginBase<CorePlugin>::process_nmea_(NmeaSentenceMsg::ConstSharedPtr msg)
 {
-  std::cout << " processNmea " << std::endl;
-  std::cout << msg->sentence << std::endl;
+  // std::cout << " processNmea " << std::endl;
+  // std::cout << msg->sentence << std::endl;
 
   switch (core::NMEAParsing::extractSentenceId(msg->sentence)) {
     case core::NMEAParsing::SentenceID::GGA:
@@ -235,7 +235,6 @@ void GPSLocalisationPluginBase<CorePlugin>::process_nmea_(NmeaSentenceMsg::Const
       break;
     case core::NMEAParsing::SentenceID::HDT:
       if constexpr (std::is_same_v<CorePlugin, core::LocalisationDualAntennaGPSPlugin>) {
-        std::cout << " process course " << std::endl;
         process_course_(*msg);
       }
       break;
@@ -252,7 +251,6 @@ template<typename CorePlugin>
 void GPSLocalisationPluginBase<CorePlugin>::process_odom_(OdometryMsg::ConstSharedPtr msg)
 {
   if constexpr (std::is_same_v<CorePlugin, core::LocalisationSingleAntennaGPSPlugin>) {
-    std::cout << " process linear speed " << std::endl;
     plugin_->processLinearSpeed(
       to_romea_duration(msg->header.stamp),
       msg->twist.twist.linear.x);
