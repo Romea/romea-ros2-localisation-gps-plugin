@@ -1,6 +1,6 @@
 # romea_localisation_gps_plugin
 
-This package is a gps plugin for robot localisation. It takes NMEA data coming from gps in order to provide a position and course angle observations with respect of a local tangent plane ENU reference frame.
+This package is a gps plugin for robot localisation in the context ROMEA ecosystem. It takes NMEA data coming from gps in order to provide a position and course angle observations with respect of a local tangent plane ENU reference frame.
 
 ## Plugin node description ##
 
