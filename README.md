@@ -4,7 +4,7 @@ This package is a gps plugin for robot localisation. It takes NMEA data coming f
 
 ## Plugin node description ##
 
-#### 1 Subscribed Topics ####
+#### 1) Subscribed Topics ####
 
 
 - gps/nmea_sentence : (nmea_msgs::msg::Sentence)
@@ -15,7 +15,7 @@ This package is a gps plugin for robot localisation. It takes NMEA data coming f
 
   This topic is provided by vehicle controllers. It will be used to decuded if vehicle moves in forward or reverse direction
 
-#### 2 Published Topics ####
+#### 2) Published Topics ####
 
 - position (romea_localisation_msgs::msg::ObservationPositionStamped)
 
@@ -29,7 +29,7 @@ This package is a gps plugin for robot localisation. It takes NMEA data coming f
     The course angle and its standard deviation are deduced from RMC frame.
     It is equal to &#960;/2-track angle when vehicle move in forward direction and 3&#960;/2-track overwise. Course angle is only published if speed over ground is upper than minimal speed define by user.  
 
-#### 3 Parameters ####
+#### 3) Parameters ####
 
 - ~minimal_fix_quality (integer, default=4)
 
