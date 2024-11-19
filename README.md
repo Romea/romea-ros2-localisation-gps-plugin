@@ -1,10 +1,10 @@
-# 1 Overview #
+# romea_localisation_gps_plugin
 
 This package is a gps plugin for robot localisation. It takes NMEA data coming from gps in order to provide a position and course angle observations with respect of a local tangent plane ENU reference frame.
 
-# 2 Node #
+## Plugin node description ##
 
-### 2.1 Subscribed Topics ###
+#### 1 Subscribed Topics ####
 
 
 - gps/nmea_sentence : (nmea_msgs::msg::Sentence)
@@ -15,7 +15,7 @@ This package is a gps plugin for robot localisation. It takes NMEA data coming f
 
   This topic is provided by vehicle controllers. It will be used to decuded if vehicle moves in forward or reverse direction
 
-### 2.2 Published Topics ###
+#### 2 Published Topics ####
 
 - position (romea_localisation_msgs::msg::ObservationPositionStamped)
 
@@ -29,7 +29,7 @@ This package is a gps plugin for robot localisation. It takes NMEA data coming f
     The course angle and its standard deviation are deduced from RMC frame.
     It is equal to &#960;/2-track angle when vehicle move in forward direction and 3&#960;/2-track overwise. Course angle is only published if speed over ground is upper than minimal speed define by user.  
 
-### 2.3 Parameters ###
+#### 3 Parameters ####
 
 - ~minimal_fix_quality (integer, default=4)
 
@@ -79,3 +79,28 @@ This package is a gps plugin for robot localisation. It takes NMEA data coming f
 - ~wgs84_anchor.altidue 
   
   Reference altitude in meter
+
+
+## **Contributing**
+
+If you'd like to contribute to this project, here are some guidelines:
+
+1. Fork the repository.
+2. Create a new branch for your changes.
+3. Make your changes.
+4. Write tests to cover your changes.
+5. Run the tests to ensure they pass.
+6. Commit your changes.
+7. Push your changes to yo
+
+## License
+
+This project is released under the Apache License 2.0. See the LICENSE file for details.
+
+### Authors
+
+ romea_localisation_gps_plugin project was developed by **Jean Laneurit** in the context of BaudetRob2 ANR project.
+
+### Contact
+
+If you have any questions or comments about romea_localisation_gps_plugin project, please contact **[Jean Laneurit](mailto:jean.laneurit@inrae.fr)** 
