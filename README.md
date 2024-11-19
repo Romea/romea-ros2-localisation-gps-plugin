@@ -1,8 +1,8 @@
 # romea_localisation_gps_plugin
 
-This package is a gps plugin for robot localisation in the context ROMEA ecosystem. It takes NMEA data coming from gps in order to provide a position and course angle observations with respect of a local tangent plane ENU reference frame.
+This package is a GPS plugin designed for robot localization within the ROMEA ecosystem for ROS2. It processes NMEA data from GPS devices to provide position and course angle observations relative to a local tangent plane in the ENU (East-North-Up) reference frame
 
-## Plugin node description ##
+## ROS2 plugin node description ##
 
 #### 1) Subscribed Topics ####
 
