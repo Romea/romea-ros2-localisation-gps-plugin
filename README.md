@@ -1,4 +1,4 @@
-# romea_localisation_gps_plugin
+# romea_ros2_localisation_gps_plugin
 
 This package is a GPS plugin designed for robot localization within the ROMEA ecosystem for ROS2. It processes NMEA data from GPS devices to provide position and course angle observations relative to a local tangent plane in the ENU (East-North-Up) reference frame
 
@@ -102,8 +102,8 @@ This project is released under the Apache License 2.0. See the LICENSE file for 
 
 ### Authors
 
- romea_localisation_gps_plugin project was developed by **Jean Laneurit** in the context of BaudetRob2 ANR project.
+ romea_ros2_localisation_gps_plugin project was developed by **Jean Laneurit** in the context of BaudetRob2 ANR project.
 
 ### Contact
 
-If you have any questions or comments about romea_localisation_gps_plugin project, please contact **[Jean Laneurit](mailto:jean.laneurit@inrae.fr)** 
+If you have any questions or comments about romea_ros2_localisation_gps_plugin project, please contact **[Jean Laneurit](mailto:jean.laneurit@inrae.fr)** 
