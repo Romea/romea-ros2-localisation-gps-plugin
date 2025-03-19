@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef ROMEA_LOCALISATION_GPS_PLUGIN__GPS_LOCALISATION_PLUGIN_HPP_
-#define ROMEA_LOCALISATION_GPS_PLUGIN__GPS_LOCALISATION_PLUGIN_HPP_
+#ifndef ROMEA_LOCALISATION_GPS_PLUGIN__GPS_PLUGIN_HPP_
+#define ROMEA_LOCALISATION_GPS_PLUGIN__GPS_PLUGIN_HPP_
 
 // std
 #include <string>
@@ -27,7 +27,7 @@
 #include "geometry_msgs/msg/transform_stamped.hpp"
 
 // romea
-#include "romea_core_localisation_gps/LocalisationGPSPlugin.hpp"
+#include "romea_core_localisation_gps/gps_plugin.hpp"
 #include "romea_localisation_utils/conversions/observation_position_conversions.hpp"
 #include "romea_localisation_utils/conversions/observation_course_conversions.hpp"
 #include "romea_common_utils/conversions/diagnostic_conversions.hpp"
@@ -41,9 +41,11 @@ namespace romea
 {
 namespace ros2
 {
+namespace localisation
+{
 
 template<typename CorePlugin>
-class GPSLocalisationPluginBase
+class GPSPluginBase
 {
 public:
   using OdometryMsg = nav_msgs::msg::Odometry;
@@ -55,10 +57,10 @@ public:
 
 public:
   ROMEA_LOCALISATION_GPS_PLUGIN_PUBLIC
-  explicit GPSLocalisationPluginBase(const rclcpp::NodeOptions & options);
+  explicit GPSPluginBase(const rclcpp::NodeOptions & options);
 
   ROMEA_LOCALISATION_GPS_PLUGIN_PUBLIC
-  virtual ~GPSLocalisationPluginBase() = default;
+  virtual ~GPSPluginBase() = default;
 
   ROMEA_LOCALISATION_GPS_PLUGIN_PUBLIC
   rclcpp::node_interfaces::NodeBaseInterface::SharedPtr
@@ -100,8 +102,8 @@ protected:
 protected:
   rclcpp::Node::SharedPtr node_;
   std::unique_ptr<CorePlugin> plugin_;
-  core::ObservationPosition position_observation_;
-  core::ObservationCourse course_observation_;
+  core::localisation::ObservationPosition position_observation_;
+  core::localisation::ObservationCourse course_observation_;
 
   rclcpp::Subscription<NmeaSentenceMsg>::SharedPtr nmea_sub_;
   rclcpp::Subscription<OdometryMsg>::SharedPtr odom_sub_;
@@ -113,12 +115,11 @@ protected:
   bool restamping_;
 };
 
-using SingleAntennaGPSLocalisationPlugin =
-  GPSLocalisationPluginBase<core::LocalisationSingleAntennaGPSPlugin>;
-using DualAntennaGPSLocalisationPlugin =
-  GPSLocalisationPluginBase<core::LocalisationDualAntennaGPSPlugin>;
+using SingleAntennaGPSPlugin = GPSPluginBase<core::localisation::SingleAntennaGPSPlugin>;
+using DualAntennaGPSPlugin = GPSPluginBase<core::localisation::DualAntennaGPSPlugin>;
 
+}  // namespace localisation
 }  // namespace ros2
 }  // namespace romea
 
-#endif  // ROMEA_LOCALISATION_GPS_PLUGIN__GPS_LOCALISATION_PLUGIN_HPP_
+#endif  // ROMEA_LOCALISATION_GPS_PLUGIN__GPS_PLUGIN_HPP_

@@ -32,8 +32,8 @@ find_package(nmea_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
 
 add_library(${PROJECT_NAME} SHARED
-  src/gps_localisation_plugin.cpp
-  src/gps_localisation_plugin_parameters.cpp)
+  src/gps_plugin.cpp
+  src/gps_plugin_parameters.cpp)
 
 target_include_directories(${PROJECT_NAME} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -57,12 +57,12 @@ ament_target_dependencies(${PROJECT_NAME}
   nav_msgs)
 
 rclcpp_components_register_node(${PROJECT_NAME}
-  PLUGIN "romea::ros2::SingleAntennaGPSLocalisationPlugin"
+  PLUGIN "romea::ros2::localisation::SingleAntennaGPSPlugin"
   EXECUTABLE single_antenna_gps_localisation_plugin_node
 )
 
 rclcpp_components_register_node(${PROJECT_NAME}
-  PLUGIN "romea::ros2::DualAntennaGPSLocalisationPlugin"
+  PLUGIN "romea::ros2::localisation::DualAntennaGPSPlugin"
   EXECUTABLE dual_antenna_gps_localisation_plugin_node
 )
 

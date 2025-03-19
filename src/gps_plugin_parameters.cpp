@@ -22,7 +22,7 @@
 #include "romea_common_utils/params/geodesy_parameters.hpp"
 
 // local
-#include "romea_localisation_gps_plugin/gps_localisation_plugin_parameters.hpp"
+#include "romea_localisation_gps_plugin/gps_plugin_parameters.hpp"
 
 namespace
 {
@@ -47,6 +47,8 @@ const char wgs84_anchor_param_name[] = "wgs84_anchor";
 namespace romea
 {
 namespace ros2
+{
+namespace localisation
 {
 
 //-----------------------------------------------------------------------------
@@ -175,5 +177,6 @@ core::GeodeticCoordinates get_wgs84_anchor(rclcpp::Node::SharedPtr node)
 //   return get_eigen_xyz_vector_parameter<Eigen::Vector3d>(node, "gps");
 // }
 
+}  // namespace localisation
 }  // namespace ros2
 }  // namespace romea

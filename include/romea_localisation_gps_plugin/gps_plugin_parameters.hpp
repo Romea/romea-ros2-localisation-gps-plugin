@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef ROMEA_LOCALISATION_GPS_PLUGIN__GPS_LOCALISATION_PLUGIN_PARAMETERS_HPP_
-#define ROMEA_LOCALISATION_GPS_PLUGIN__GPS_LOCALISATION_PLUGIN_PARAMETERS_HPP_
+#ifndef ROMEA_LOCALISATION_GPS_PLUGIN__GPS_PLUGIN_PARAMETERS_HPP_
+#define ROMEA_LOCALISATION_GPS_PLUGIN__GPS_PLUGIN_PARAMETERS_HPP_
 
 // eigen
 #include <Eigen/Geometry>
@@ -30,8 +30,9 @@
 
 namespace romea
 {
-
 namespace ros2
+{
+namespace localisation
 {
 
 void declare_restamping(rclcpp::Node::SharedPtr node);
@@ -58,7 +59,8 @@ core::GeodeticCoordinates get_wgs84_anchor(rclcpp::Node::SharedPtr node);
 // double get_gps_simulation_fix_eure(rclcpp::Node::SharedPtr node);
 // Eigen::Vector3d get_gps_antenna_body_position(rclcpp::Node::SharedPtr node);
 
+}  // namespace localisation
 }  // namespace ros2
 }  // namespace romea
 
-#endif  // ROMEA_LOCALISATION_GPS_PLUGIN__GPS_LOCALISATION_PLUGIN_PARAMETERS_HPP_
+#endif  // ROMEA_LOCALISATION_GPS_PLUGIN__GPS_PLUGIN_PARAMETERS_HPP_
