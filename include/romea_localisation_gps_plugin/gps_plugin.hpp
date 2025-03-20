@@ -28,7 +28,7 @@
 
 // romea
 #include "romea_core_localisation_gps/gps_plugin.hpp"
-#include "romea_localisation_utils/conversions/observation_position_conversions.hpp"
+#include "romea_localisation_utils/conversions/observation_position3d_conversions.hpp"
 #include "romea_localisation_utils/conversions/observation_course_conversions.hpp"
 #include "romea_common_utils/conversions/diagnostic_conversions.hpp"
 #include "romea_common_utils/publishers/diagnostic_publisher.hpp"
@@ -52,8 +52,8 @@ public:
   using NmeaSentenceMsg = nmea_msgs::msg::Sentence;
   using ObservationCourseStampedMsg =
     romea_localisation_msgs::msg::ObservationCourseStamped;
-  using ObservationPosition2DStampedMsg =
-    romea_localisation_msgs::msg::ObservationPosition2DStamped;
+  using ObservationPosition3DStampedMsg =
+    romea_localisation_msgs::msg::ObservationPosition3DStamped;
 
 public:
   ROMEA_LOCALISATION_GPS_PLUGIN_PUBLIC
@@ -102,13 +102,13 @@ protected:
 protected:
   rclcpp::Node::SharedPtr node_;
   std::unique_ptr<CorePlugin> plugin_;
-  core::localisation::ObservationPosition position_observation_;
+  core::localisation::ObservationPosition3D position_observation_;
   core::localisation::ObservationCourse course_observation_;
 
   rclcpp::Subscription<NmeaSentenceMsg>::SharedPtr nmea_sub_;
   rclcpp::Subscription<OdometryMsg>::SharedPtr odom_sub_;
   rclcpp::Publisher<ObservationCourseStampedMsg>::SharedPtr course_pub_;
-  rclcpp::Publisher<ObservationPosition2DStampedMsg>::SharedPtr position_pub_;
+  rclcpp::Publisher<ObservationPosition3DStampedMsg>::SharedPtr position_pub_;
   std::shared_ptr<StampedPublisherBase<core::DiagnosticReport>> diagnostic_pub_;
   rclcpp::TimerBase::SharedPtr timer_;
 

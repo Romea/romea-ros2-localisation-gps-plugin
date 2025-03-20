@@ -87,7 +87,7 @@ bool make_position_observation(
   CorePlugin & plugin,
   const romea::core::Duration & stamp,
   const std::string & sentence,
-  romea::core::localisation::ObservationPosition & position_observation)
+  romea::core::localisation::ObservationPosition3D & position_observation)
 {
   return plugin.process_gga(stamp, sentence, position_observation);
 }
@@ -177,7 +177,7 @@ void GPSPluginBase<CorePlugin>::init_course_publisher_()
 template<typename CorePlugin>
 void GPSPluginBase<CorePlugin>::init_position_publisher_()
 {
-  position_pub_ = node_->create_publisher<ObservationPosition2DStampedMsg>(
+  position_pub_ = node_->create_publisher<ObservationPosition3DStampedMsg>(
     "position", sensor_data_qos());
 }
 
@@ -303,7 +303,7 @@ void GPSPluginBase<CorePlugin>::publish_position_(
   const rclcpp::Time & stamp,
   const std::string & frame_id)
 {
-  auto position_msg = std::make_unique<ObservationPosition2DStampedMsg>();
+  auto position_msg = std::make_unique<ObservationPosition3DStampedMsg>();
   to_ros_msg(stamp, frame_id, position_observation_, *position_msg);
   position_pub_->publish(std::move(position_msg));
 }
