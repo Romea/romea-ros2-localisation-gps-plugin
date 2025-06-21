@@ -196,7 +196,7 @@ void GPSLocalisationPluginBase<CorePlugin>::init_nmea_subscriber_()
     std::bind(&GPSLocalisationPluginBase::process_nmea_, this, std::placeholders::_1);
 
   nmea_sub_ = node_->create_subscription<NmeaSentenceMsg>(
-    "gps/nmea_sentence", best_effort(10), callback);
+    "gps/nmea_sentence", best_effort(30), callback);
 }
 
 //-----------------------------------------------------------------------------
