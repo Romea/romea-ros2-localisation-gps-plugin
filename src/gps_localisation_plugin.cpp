@@ -116,7 +116,8 @@ namespace ros2
 
 //-----------------------------------------------------------------------------
 template<typename CorePlugin>
-GPSLocalisationPluginBase<CorePlugin>::GPSLocalisationPluginBase(const rclcpp::NodeOptions & options) // NOLINT
+GPSLocalisationPluginBase<CorePlugin>::GPSLocalisationPluginBase(
+  const rclcpp::NodeOptions & options)
 : node_(std::make_shared<rclcpp::Node>("gps_localisation_plugin", options)),
   plugin_(nullptr),
   position_observation_(),

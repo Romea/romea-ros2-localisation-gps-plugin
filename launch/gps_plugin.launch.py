@@ -12,13 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import yaml
 
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, OpaqueFunction
 from launch.substitutions import LaunchConfiguration
-from launch_ros.descriptions import ComposableNode
 from launch_ros.actions import LoadComposableNodes, Node
+from launch_ros.descriptions import ComposableNode
+
+import yaml
 
 
 def get_plugin_name(context):
@@ -32,6 +33,7 @@ def get_plugin_configuration(context):
 
 def get_component_container(context):
     return LaunchConfiguration("component_container").perform(context)
+
 
 def has_double_antenna(context):
     return eval(LaunchConfiguration("dual_antenna").perform(context))
@@ -64,7 +66,7 @@ def launch_setup(context, *args, **kwargs):
                 target_container=component_container),
 
             return list(load_component)
-    else:    
+    else:
         if not component_container:
             node = Node(
                 package="romea_localisation_gps_plugin",

@@ -5,7 +5,6 @@ repositories:
     romea_core/romea_gps:
         type: git
         url: git@forge.inrae.fr:romea_core/romea_gps.git
-
     romea_core/romea_filtering:
         type: git
         url: git@forge.inrae.fr:romea_core/romea_filtering.git
@@ -22,7 +21,6 @@ repositories:
     romea_ros2/interfaces/sensors/romea_gps:
         type: git
         url: git@forge.inrae.fr:romea_ros2/interfaces/sensors/romea_gps.git
-
     romea_ros2/algorithms/localisation/romea_localisation_msgs:
         type: git
         url: git@forge.inrae.fr:romea_ros2/algorithms/localisation/romea_localisation_msgs.git
