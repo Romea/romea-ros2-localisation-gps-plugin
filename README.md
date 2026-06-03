@@ -1,109 +1,167 @@
-# romea_ros2_localisation_gps_plugin
+# romea_localisation_gps_plugin
 
-This package is a GPS plugin designed for robot localization within the ROMEA ecosystem for ROS2. It processes NMEA data from GPS devices to provide position and course angle observations relative to a local tangent plane in the ENU (East-North-Up) reference frame
+`romea_localisation_gps_plugin` provides ROS2 localisation plugin nodes that convert GPS NMEA sentences into `romea_localisation_msgs` observations.
 
-## ROS2 plugin node description ##
+The package contains one plugin for single-antenna GPS receivers and one plugin for dual-antenna GPS receivers. Both plugins publish position observations from NMEA `GGA` sentences. The single-antenna plugin derives course observations from `RMC` track information, while the dual-antenna plugin derives course observations from `HDT` heading information.
 
-#### 1) Subscribed Topics ####
+Internally, the ROS2 components wrap the framework-independent GPS localisation plugins provided by `romea_core_localisation_gps`.
 
+## 1) Concept
 
-- **gps/nmea_sentence** : (nmea_msgs::msg::Sentence)
+The GPS localisation plugin is an observation producer. It does not estimate the robot pose by itself. It converts GPS receiver data into localisation observations that are fused by the robot-to-world localisation filter.
 
-  This topic is provided by nmea_topic_driver or romea_gps_driver. Only GGA and RMC frames are used to fix position and course angle
+```mermaid
+flowchart LR
+  subgraph ros2_inputs["ROS2 input messages"]
+    direction TB
+    nmea["gps/nmea_sentence<br/><br/>nmea_msgs/msg/Sentence"]
+    odom["vehicle_controller/odom<br/><br/>nav_msgs/msg/Odometry"]
+  end
 
-- **vehicle_controler/odom** : (nav_msgs::msg::Odometry)
+  subgraph plugin_nodes["Localisation plugin node"]
+    plugin["GPS localisation plugin<br/><br/>parse NMEA sentences and build GPS observations"]
+  end
 
-  This topic is provided by vehicle controllers. It will be used to decuded if vehicle moves in forward or reverse direction
+  subgraph observation_msgs["romea_localisation_msgs"]
+    direction TB
+    position["position<br/><br/>romea_localisation_msgs/msg/ObservationPosition2DStamped"]
+    course["course<br/><br/>romea_localisation_msgs/msg/ObservationCourseStamped"]
+  end
 
-#### 2) Published Topics ####
+  subgraph filters["Localisation filters"]
+    filter["robot-to-world localisation"]
+  end
 
-- **position** (romea_localisation_msgs::msg::ObservationPositionStamped)
+  nmea -->|consume| plugin
+  odom -->|consume| plugin
+  plugin -->|publish| position
+  plugin -->|publish| course
+  position -->|fuse| filter
+  course -->|fuse| filter
 
-    Position and its covariance are deduced from GGA frame and published only if :
-    - Horizontal Dilution of Precision is lower than 5
-    - Number of satellites used to compute fix is than 6
-    - Fix quatity is upper or equal to minimal fix quality define by user
+  classDef ros2 fill:#e8f2ff,stroke:#5b8ec7,color:#111,rx:6,ry:6
+  classDef pluginStyle fill:#eaf7ea,stroke:#5c9f5c,color:#111,rx:6,ry:6
+  classDef msg fill:#fff6d8,stroke:#c9a227,color:#111,rx:6,ry:6
+  classDef filterStyle fill:#f1eaff,stroke:#8b6fc6,color:#111,rx:6,ry:6
 
-- **course** (romea_localisation_msgs::msg::ObservationCourseStamped)
+  class nmea,odom ros2
+  class plugin pluginStyle
+  class position,course msg
+  class filter filterStyle
 
-    The course angle and its standard deviation are deduced from RMC frame.
-    It is equal to &#960;/2-track angle when vehicle move in forward direction and 3&#960;/2-track overwise. Course angle is only published if speed over ground is upper than minimal speed define by user.  
+  style ros2_inputs fill:#f6faff,stroke:#9abbe3,rx:6,ry:6
+  style plugin_nodes fill:#f7fff7,stroke:#9ecf9e,rx:6,ry:6
+  style observation_msgs fill:#fffaf0,stroke:#dec86b,rx:6,ry:6
+  style filters fill:#faf7ff,stroke:#b8a4dd,rx:6,ry:6
+```
 
-#### 3) Parameters ####
+The plugin uses a WGS84 geographic anchor to convert geodetic GPS fixes into a local ENU frame. This anchor is normally provided by the demo or robot localisation configuration.
 
-- **~minimal_fix_quality** (integer, default=4)
+## 2) Supported Plugins
 
-  In order to only pusblished fix position when an acceptable accurracy is reached a minimal fix quality must be defined by user according experimentation requierements. Here is the list of useful fix qualities as a reminder :
-    - gps fix :2
-    - dgps fix : 3
-    - rtk fix : 4
-    - float rtk fix : 5
+| Executable | Component plugin | GPS mode |
+| --- | --- | --- |
+| `single_antenna_gps_localisation_plugin_node` | `romea::ros2::localisation::SingleAntennaGPSPlugin` | Single antenna |
+| `dual_antenna_gps_localisation_plugin_node` | `romea::ros2::localisation::DualAntennaGPSPlugin` | Dual antenna |
 
-- **~minimal_speed_over_ground_to_use_track_angle** (float, default=0.8)
+The single-antenna plugin subscribes to vehicle odometry to determine whether the robot is moving forward or backward. This is needed to convert GPS track angle into robot course angle.
 
-  The track angle is reliable only when the vehicle moves fast enough. A minimal speed over ground must be defined by user in order to computed and published the course angle when this speed is reached by the vehicle.
+The dual-antenna plugin does not need vehicle odometry for course estimation because the heading is provided directly by the GPS receiver.
 
-- **~restamping** (bool, default: false)
+## 3) Input Topics
 
-  If this parameter is set to true stamp of position and course messages is equal to computer current time else this stamp is equal gps nmea message stamp.  This paremeter will be used when gps data are coming from a remote master.
+| Topic | Type | Use |
+| --- | --- | --- |
+| `gps/nmea_sentence` | `nmea_msgs/msg/Sentence` | NMEA sentence stream from the GPS driver |
+| `vehicle_controller/odom` | `nav_msgs/msg/Odometry` | Vehicle odometry used by the single-antenna plugin to interpret track direction |
 
+The NMEA parser uses:
 
-- **~gps.gps_fix_uere** (double, default 3.0)
+| Sentence | Use |
+| --- | --- |
+| `GGA` | Position observation |
+| `RMC` | Course observation for single-antenna GPS |
+| `HDT` | Course observation for dual-antenna GPS |
+| `GSV` | Satellite-view information used by diagnostics |
 
-  User Equivalent Range Error for gps fix quality
+Other NMEA sentences can be added later if new GPS localisation observations or diagnostics need them.
 
-- **~gps.dpgs_fix_uere** (double, default 3.0)
+## 4) Output Topics
 
-  User Equivalent Range Error for dgps fix quality
+| Topic | Type | Description |
+| --- | --- | --- |
+| `position` | `romea_localisation_msgs/msg/ObservationPosition2DStamped` | GPS position observation in the local ENU frame |
+| `course` | `romea_localisation_msgs/msg/ObservationCourseStamped` | GPS course or heading observation |
 
-- **~gps.float_rtk_fix_eure** (double, default 3.0)
+In a robot application, these topics are usually remapped to robot-level localisation topics such as `/<robot_namespace>/localisation/position` and `/<robot_namespace>/localisation/course`.
 
-  User Equivalent Range Error for float rtk fix quality
+## 5) Parameters
 
-- **~gps.rtk_fix_eure** ( double, default 3.0)
+| Parameter | Type | Default | Description |
+| --- | --- | --- | --- |
+| `restamping` | bool | `false` | If true, observations are stamped with the node clock instead of the NMEA message stamp |
+| `minimal_fix_quality` | int | `4` | Minimal accepted GPS fix quality |
+| `minimal_speed_over_ground` | double | `0.8` | Minimal speed over ground required to publish course from a single-antenna GPS |
+| `wgs84_anchor.latitude` | double | required | Latitude of the local ENU origin, in degrees |
+| `wgs84_anchor.longitude` | double | required | Longitude of the local ENU origin, in degrees |
+| `wgs84_anchor.altitude` | double | required | Altitude of the local ENU origin, in meters |
+| `gps.gps_fix_uere` | double | required | User equivalent range error for GPS fix quality |
+| `gps.dgps_fix_uere` | double | required | User equivalent range error for DGPS fix quality |
+| `gps.float_rtk_fix_uere` | double | required | User equivalent range error for float RTK fix quality |
+| `gps.rtk_fix_uere` | double | required | User equivalent range error for RTK fix quality |
+| `gps.simulation_fix_uere` | double | required | User equivalent range error for simulated fixes |
+| `gps.xyz` | double array | required | GPS antenna position in the localisation body frame, in meters |
 
-  User Equivalent Range Error for rtk fix quality
+Useful `minimal_fix_quality` values are:
 
-- **~gps.xyz** (vector of double)
+| Value | Meaning |
+| --- | --- |
+| `2` | GPS fix |
+| `3` | DGPS fix |
+| `4` | RTK fix |
+| `5` | Float RTK fix |
 
-  Position of GPS receiver antenna in localisation body reference frame (usually base_footprint_link)
+## 6) Configuration and Run
 
-- **~wgs84_anchor.latitude** (double) 
-  
-  Reference latitude in degree
+For a single-antenna GPS receiver:
 
-- **~wgs84_anchor.longitude** (double) 
-  
-  Reference longitude in degree
+```bash
+ros2 run romea_localisation_gps_plugin single_antenna_gps_localisation_plugin_node \
+  --ros-args --params-file path/to/gps_localisation_plugin.yaml
+```
 
-- **~wgs84_anchor.altitude** (double) 
-  
-  Reference altitude in meter
+For a dual-antenna GPS receiver:
 
-## **Usage**
+```bash
+ros2 run romea_localisation_gps_plugin dual_antenna_gps_localisation_plugin_node \
+  --ros-args --params-file path/to/gps_localisation_plugin.yaml
+```
 
-  See romea_localisation_bringup project 
+Example parameter file:
 
-## **Contributing**
-
-If you'd like to contribute to this project, here are some guidelines:
-
-1. Fork the repository.
-2. Create a new branch for your changes.
-3. Make your changes.
-4. Write tests to cover your changes.
-5. Run the tests to ensure they pass.
-6. Commit your changes.
-7. Push your changes to yo
+```yaml
+gps_localisation_plugin:
+  ros__parameters:
+    restamping: false
+    minimal_fix_quality: 4
+    minimal_speed_over_ground: 0.5
+    wgs84_anchor:
+      latitude: 45.76345967
+      longitude: 3.10955017
+      altitude: 351.9
+    gps:
+      gps_fix_uere: 3.0
+      dgps_fix_uere: 1.0
+      float_rtk_fix_uere: 0.5
+      rtk_fix_uere: 0.1
+      simulation_fix_uere: 0.02
+      xyz: [1.0, 0.0, 1.5]
+```
 
 ## License
 
-This project is released under the Apache License 2.0. See the LICENSE file for details.
+This project is released under the Apache License 2.0. See the `LICENSE` file for details.
 
-### Authors
+## Authors
 
- romea_ros2_localisation_gps_plugin project was developed by **Jean Laneurit** in the context of BaudetRob2 ANR project.
-
-### Contact
-
-If you have any questions or comments about romea_ros2_localisation_gps_plugin project, please contact **[Jean Laneurit](mailto:jean.laneurit@inrae.fr)** 
+This package was developed by **Jean Laneurit**.

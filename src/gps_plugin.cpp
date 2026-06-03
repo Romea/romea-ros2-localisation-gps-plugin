@@ -1,4 +1,5 @@
-// Copyright 2022 INRAE, French National Research Institute for Agriculture, Food and Environment
+// Copyright 2022 INRAE, French National Research Institute for Agriculture,
+// Food and Environment
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,21 +19,19 @@
 #include <utility>
 
 // romea ros
-#include "romea_localisation_gps_plugin/gps_plugin_parameters.hpp"
-#include "romea_localisation_gps_plugin/gps_plugin.hpp"
 #include "romea_common_utils/conversions/time_conversions.hpp"
 #include "romea_common_utils/conversions/transform_conversions.hpp"
-#include "romea_common_utils/params/node_parameters.hpp"
 #include "romea_common_utils/params/geodesy_parameters.hpp"
+#include "romea_common_utils/params/node_parameters.hpp"
 #include "romea_common_utils/qos.hpp"
 #include "romea_gps_utils/gps_parameters.hpp"
+#include "romea_localisation_gps_plugin/gps_plugin.hpp"
+#include "romea_localisation_gps_plugin/gps_plugin_parameters.hpp"
 
-namespace
-{
+namespace {
 
 //-----------------------------------------------------------------------------
-void declare_gps_receiver_parameters(std::shared_ptr<rclcpp::Node> node)
-{
+void declare_gps_receiver_parameters(std::shared_ptr<rclcpp::Node> node) {
   romea::ros2::declare_gps_gps_fix_eure(node);
   romea::ros2::declare_gps_dgps_fix_eure(node);
   romea::ros2::declare_gps_float_rtk_fix_eure(node);
@@ -42,65 +41,66 @@ void declare_gps_receiver_parameters(std::shared_ptr<rclcpp::Node> node)
 }
 
 //-----------------------------------------------------------------------------
-std::unique_ptr<romea::core::GPSReceiver> make_gps_receiver(std::shared_ptr<rclcpp::Node> node)
-{
+std::unique_ptr<romea::core::GPSReceiver> make_gps_receiver(
+    std::shared_ptr<rclcpp::Node> node) {
   return std::make_unique<romea::core::GPSReceiver>(
-    romea::ros2::get_gps_gps_fix_eure(node),
-    romea::ros2::get_gps_dgps_fix_eure(node),
-    romea::ros2::get_gps_float_rtk_fix_eure(node),
-    romea::ros2::get_gps_rtk_fix_eure(node),
-    romea::ros2::get_gps_simulation_fix_eure(node),
-    romea::ros2::get_gps_antenna_body_position(node));
+      romea::ros2::get_gps_gps_fix_eure(node),
+      romea::ros2::get_gps_dgps_fix_eure(node),
+      romea::ros2::get_gps_float_rtk_fix_eure(node),
+      romea::ros2::get_gps_rtk_fix_eure(node),
+      romea::ros2::get_gps_simulation_fix_eure(node),
+      romea::ros2::get_gps_antenna_body_position(node));
 }
 
 //-----------------------------------------------------------------------------
-template<typename CorePlugin>
-void declare_plugin_parameters(std::shared_ptr<rclcpp::Node> node)
-{
+template <typename CorePlugin>
+void declare_plugin_parameters(std::shared_ptr<rclcpp::Node> node) {
   romea::ros2::localisation::declare_restamping(node);
   romea::ros2::localisation::declare_wgs84_anchor(node);
   romea::ros2::localisation::declare_minimal_fix_quality(node);
 
-  if constexpr (std::is_same_v<CorePlugin, romea::core::localisation::SingleAntennaGPSPlugin>) {
+  if constexpr (std::is_same_v<
+                    CorePlugin,
+                    romea::core::localisation::SingleAntennaGPSPlugin>) {
     romea::ros2::localisation::declare_minimal_speed_over_ground(node);
   }
 }
 
 //-----------------------------------------------------------------------------
-template<typename CorePlugin>
-std::unique_ptr<CorePlugin> make_plugin(std::shared_ptr<rclcpp::Node> node)
-{
-  if constexpr (std::is_same_v<CorePlugin, romea::core::localisation::SingleAntennaGPSPlugin>) {
+template <typename CorePlugin>
+std::unique_ptr<CorePlugin> make_plugin(std::shared_ptr<rclcpp::Node> node) {
+  if constexpr (std::is_same_v<
+                    CorePlugin,
+                    romea::core::localisation::SingleAntennaGPSPlugin>) {
     return std::make_unique<romea::core::localisation::SingleAntennaGPSPlugin>(
-      make_gps_receiver(node),
-      romea::ros2::localisation::get_minimal_fix_quality(node),
-      romea::ros2::localisation::get_minimal_speed_over_ground(node));
+        make_gps_receiver(node),
+        romea::ros2::localisation::get_minimal_fix_quality(node),
+        romea::ros2::localisation::get_minimal_speed_over_ground(node));
   } else {
     return std::make_unique<romea::core::localisation::DualAntennaGPSPlugin>(
-      make_gps_receiver(node), romea::ros2::localisation::get_minimal_fix_quality(node));
+        make_gps_receiver(node),
+        romea::ros2::localisation::get_minimal_fix_quality(node));
   }
 }
 
 //-----------------------------------------------------------------------------
-template<typename CorePlugin>
+template <typename CorePlugin>
 bool make_position_observation(
-  CorePlugin & plugin,
-  const romea::core::Duration & stamp,
-  const std::string & sentence,
-  romea::core::localisation::ObservationPosition3D & position_observation)
-{
+    CorePlugin& plugin, const romea::core::Duration& stamp,
+    const std::string& sentence,
+    romea::core::localisation::ObservationPosition& position_observation) {
   return plugin.process_gga(stamp, sentence, position_observation);
 }
 
 //-----------------------------------------------------------------------------
-template<typename CorePlugin>
+template <typename CorePlugin>
 bool make_course_observation(
-  CorePlugin & plugin,
-  const romea::core::Duration & stamp,
-  const std::string & sentence,
-  romea::core::localisation::ObservationCourse & course_observation)
-{
-  if constexpr (std::is_same_v<CorePlugin, romea::core::localisation::SingleAntennaGPSPlugin>) {
+    CorePlugin& plugin, const romea::core::Duration& stamp,
+    const std::string& sentence,
+    romea::core::localisation::ObservationCourse& course_observation) {
+  if constexpr (std::is_same_v<
+                    CorePlugin,
+                    romea::core::localisation::SingleAntennaGPSPlugin>) {
     return plugin.process_rmc(stamp, sentence, course_observation);
   } else {
     return plugin.process_hdt(stamp, sentence, course_observation);
@@ -109,27 +109,23 @@ bool make_course_observation(
 
 }  // namespace
 
-namespace romea
-{
-namespace ros2
-{
-namespace localisation
-{
+namespace romea {
+namespace ros2 {
+namespace localisation {
 
 //-----------------------------------------------------------------------------
-template<typename CorePlugin>
-GPSPluginBase<CorePlugin>::GPSPluginBase(const rclcpp::NodeOptions & options)
-: node_(std::make_shared<rclcpp::Node>("gps_localisation_plugin", options)),
-  plugin_(nullptr),
-  position_observation_(),
-  course_observation_(),
-  nmea_sub_(nullptr),
-  course_pub_(nullptr),
-  position_pub_(nullptr),
-  diagnostic_pub_(nullptr),
-  timer_(),
-  restamping_(false)
-{
+template <typename CorePlugin>
+GPSPluginBase<CorePlugin>::GPSPluginBase(const rclcpp::NodeOptions& options)
+    : node_(std::make_shared<rclcpp::Node>("gps_localisation_plugin", options)),
+      plugin_(nullptr),
+      position_observation_(),
+      course_observation_(),
+      nmea_sub_(nullptr),
+      course_pub_(nullptr),
+      position_pub_(nullptr),
+      diagnostic_pub_(nullptr),
+      timer_(),
+      restamping_(false) {
   declare_parameters_();
   init_plugin_();
   init_timer_();
@@ -141,88 +137,79 @@ GPSPluginBase<CorePlugin>::GPSPluginBase(const rclcpp::NodeOptions & options)
 }
 
 //-----------------------------------------------------------------------------
-template<typename CorePlugin>
+template <typename CorePlugin>
 rclcpp::node_interfaces::NodeBaseInterface::SharedPtr
-GPSPluginBase<CorePlugin>::get_node_base_interface() const
-{
+GPSPluginBase<CorePlugin>::get_node_base_interface() const {
   return node_->get_node_base_interface();
 }
 
 //-----------------------------------------------------------------------------
-template<typename CorePlugin>
-void GPSPluginBase<CorePlugin>::declare_parameters_()
-{
+template <typename CorePlugin>
+void GPSPluginBase<CorePlugin>::declare_parameters_() {
   declare_plugin_parameters<CorePlugin>(node_);
   declare_gps_receiver_parameters(node_);
 }
 
 //-----------------------------------------------------------------------------
-template<typename CorePlugin>
-void GPSPluginBase<CorePlugin>::init_plugin_()
-{
+template <typename CorePlugin>
+void GPSPluginBase<CorePlugin>::init_plugin_() {
   plugin_ = make_plugin<CorePlugin>(node_);
   plugin_->set_anchor(get_wgs84_anchor(node_));
   restamping_ = get_parameter<bool>(node_, "restamping");
 }
 
 //-----------------------------------------------------------------------------
-template<typename CorePlugin>
-void GPSPluginBase<CorePlugin>::init_course_publisher_()
-{
+template <typename CorePlugin>
+void GPSPluginBase<CorePlugin>::init_course_publisher_() {
   course_pub_ = node_->create_publisher<ObservationCourseStampedMsg>(
-    "course", sensor_data_qos());
+      "course", sensor_data_qos());
 }
 
 //-----------------------------------------------------------------------------
-template<typename CorePlugin>
-void GPSPluginBase<CorePlugin>::init_position_publisher_()
-{
-  position_pub_ = node_->create_publisher<ObservationPosition3DStampedMsg>(
-    "position", sensor_data_qos());
+template <typename CorePlugin>
+void GPSPluginBase<CorePlugin>::init_position_publisher_() {
+  position_pub_ = node_->create_publisher<ObservationPositionStampedMsg>(
+      "position", sensor_data_qos());
 }
 
 //-----------------------------------------------------------------------------
-template<typename CorePlugin>
-void GPSPluginBase<CorePlugin>::init_diagnostic_publisher_()
-{
-  diagnostic_pub_ =
-    make_diagnostic_publisher<core::DiagnosticReport>(
-    node_, node_->get_fully_qualified_name(), 1.0);
+template <typename CorePlugin>
+void GPSPluginBase<CorePlugin>::init_diagnostic_publisher_() {
+  diagnostic_pub_ = make_diagnostic_publisher<core::DiagnosticReport>(
+      node_, node_->get_fully_qualified_name(), 1.0);
 }
 
 //-----------------------------------------------------------------------------
-template<typename CorePlugin>
-void GPSPluginBase<CorePlugin>::init_nmea_subscriber_()
-{
+template <typename CorePlugin>
+void GPSPluginBase<CorePlugin>::init_nmea_subscriber_() {
   auto callback =
-    std::bind(&GPSPluginBase::process_nmea_, this, std::placeholders::_1);
+      std::bind(&GPSPluginBase::process_nmea_, this, std::placeholders::_1);
 
   nmea_sub_ = node_->create_subscription<NmeaSentenceMsg>(
-    "gps/nmea_sentence", best_effort(10), callback);
+      "gps/nmea_sentence", best_effort(10), callback);
 }
 
 //-----------------------------------------------------------------------------
-template<typename CorePlugin>
-void GPSPluginBase<CorePlugin>::init_odom_subscriber_()
-{
-  auto callback = std::bind(&GPSPluginBase::process_odom_, this, std::placeholders::_1);
+template <typename CorePlugin>
+void GPSPluginBase<CorePlugin>::init_odom_subscriber_() {
+  auto callback =
+      std::bind(&GPSPluginBase::process_odom_, this, std::placeholders::_1);
 
   odom_sub_ = node_->create_subscription<OdometryMsg>(
-    "vehicle_controller/odom", best_effort(10), callback);
+      "vehicle_controller/odom", best_effort(10), callback);
 }
 
 //-----------------------------------------------------------------------------
-template<typename CorePlugin>
-void GPSPluginBase<CorePlugin>::init_timer_()
-{
+template <typename CorePlugin>
+void GPSPluginBase<CorePlugin>::init_timer_() {
   auto callback = std::bind(&GPSPluginBase::timer_callback_, this);
   timer_ = node_->create_wall_timer(std::chrono::milliseconds(100), callback);
 }
 
 //-----------------------------------------------------------------------------
-template<typename CorePlugin>
-void GPSPluginBase<CorePlugin>::process_nmea_(NmeaSentenceMsg::ConstSharedPtr msg)
-{
+template <typename CorePlugin>
+void GPSPluginBase<CorePlugin>::process_nmea_(
+    NmeaSentenceMsg::ConstSharedPtr msg) {
   // std::cout << " processNmea " << std::endl;
   // std::cout << msg->sentence << std::endl;
 
@@ -231,12 +218,15 @@ void GPSPluginBase<CorePlugin>::process_nmea_(NmeaSentenceMsg::ConstSharedPtr ms
       process_position_(*msg);
       break;
     case core::NMEAParsing::SentenceID::RMC:
-      if constexpr (std::is_same_v<CorePlugin, core::localisation::SingleAntennaGPSPlugin>) {
+      if constexpr (std::is_same_v<
+                        CorePlugin,
+                        core::localisation::SingleAntennaGPSPlugin>) {
         process_course_(*msg);
       }
       break;
     case core::NMEAParsing::SentenceID::HDT:
-      if constexpr (std::is_same_v<CorePlugin, core::localisation::DualAntennaGPSPlugin>) {
+      if constexpr (std::is_same_v<CorePlugin,
+                                   core::localisation::DualAntennaGPSPlugin>) {
         process_course_(*msg);
       }
       break;
@@ -249,89 +239,81 @@ void GPSPluginBase<CorePlugin>::process_nmea_(NmeaSentenceMsg::ConstSharedPtr ms
 }
 
 //-----------------------------------------------------------------------------
-template<typename CorePlugin>
-void GPSPluginBase<CorePlugin>::process_odom_(OdometryMsg::ConstSharedPtr msg)
-{
-  if constexpr (std::is_same_v<CorePlugin, core::localisation::SingleAntennaGPSPlugin>) {
-    plugin_->process_linear_speed(
-      to_romea_duration(msg->header.stamp),
-      msg->twist.twist.linear.x);
+template <typename CorePlugin>
+void GPSPluginBase<CorePlugin>::process_odom_(OdometryMsg::ConstSharedPtr msg) {
+  if constexpr (std::is_same_v<CorePlugin,
+                               core::localisation::SingleAntennaGPSPlugin>) {
+    plugin_->process_linear_speed(to_romea_duration(msg->header.stamp),
+                                  msg->twist.twist.linear.x);
   }
 }
 
-
 //-----------------------------------------------------------------------------
-template<typename CorePlugin>
-void GPSPluginBase<CorePlugin>::process_position_(const NmeaSentenceMsg & msg)
-{
+template <typename CorePlugin>
+void GPSPluginBase<CorePlugin>::process_position_(const NmeaSentenceMsg& msg) {
   // std::cout << " process GGA " << std::endl;
-  auto stamp = restamping_ ? node_->get_clock()->now() :
-    rclcpp::Time(msg.header.stamp.sec, msg.header.stamp.nanosec);
+  auto stamp = restamping_ ? node_->get_clock()->now()
+                           : rclcpp::Time(msg.header.stamp.sec,
+                                          msg.header.stamp.nanosec);
 
-  if (make_position_observation(
-      *plugin_, to_romea_duration(stamp), msg.sentence, position_observation_))
-  {
+  if (make_position_observation(*plugin_, to_romea_duration(stamp),
+                                msg.sentence, position_observation_)) {
     publish_position_(stamp, "map");
   }
 }
 
 //-----------------------------------------------------------------------------
-template<typename CorePlugin>
-void GPSPluginBase<CorePlugin>::process_course_(const NmeaSentenceMsg & msg)
-{
+template <typename CorePlugin>
+void GPSPluginBase<CorePlugin>::process_course_(const NmeaSentenceMsg& msg) {
   // std::cout << " process RMC " << std::endl;
-  auto stamp = restamping_ ? node_->get_clock()->now() :
-    rclcpp::Time(msg.header.stamp.sec, msg.header.stamp.nanosec);
+  auto stamp = restamping_ ? node_->get_clock()->now()
+                           : rclcpp::Time(msg.header.stamp.sec,
+                                          msg.header.stamp.nanosec);
 
-  if (make_course_observation(
-      *plugin_, to_romea_duration(stamp), msg.sentence, course_observation_))
-  {
+  if (make_course_observation(*plugin_, to_romea_duration(stamp), msg.sentence,
+                              course_observation_)) {
     publish_course_(stamp, msg.header.frame_id);
   }
 }
 
 //-----------------------------------------------------------------------------
-template<typename CorePlugin>
-void GPSPluginBase<CorePlugin>::process_satellites_view_(const NmeaSentenceMsg & msg)
-{
+template <typename CorePlugin>
+void GPSPluginBase<CorePlugin>::process_satellites_view_(
+    const NmeaSentenceMsg& msg) {
   plugin_->process_gsv(msg.sentence);
 }
 
 //-----------------------------------------------------------------------------
-template<typename CorePlugin>
-void GPSPluginBase<CorePlugin>::publish_position_(
-  const rclcpp::Time & stamp,
-  const std::string & frame_id)
-{
-  auto position_msg = std::make_unique<ObservationPosition3DStampedMsg>();
+template <typename CorePlugin>
+void GPSPluginBase<CorePlugin>::publish_position_(const rclcpp::Time& stamp,
+                                                  const std::string& frame_id) {
+  auto position_msg = std::make_unique<ObservationPositionStampedMsg>();
   to_ros_msg(stamp, frame_id, position_observation_, *position_msg);
   position_pub_->publish(std::move(position_msg));
 }
 
 //-----------------------------------------------------------------------------
-template<typename CorePlugin>
-void GPSPluginBase<CorePlugin>::publish_course_(
-  const rclcpp::Time & stamp,
-  const std::string & frame_id)
-{
+template <typename CorePlugin>
+void GPSPluginBase<CorePlugin>::publish_course_(const rclcpp::Time& stamp,
+                                                const std::string& frame_id) {
   auto course_msg = std::make_unique<ObservationCourseStampedMsg>();
   to_ros_msg(stamp, frame_id, course_observation_, *course_msg);
   course_pub_->publish(std::move(course_msg));
 }
 
 //-----------------------------------------------------------------------------
-template<typename CorePlugin>
-void GPSPluginBase<CorePlugin>::timer_callback_()
-{
+template <typename CorePlugin>
+void GPSPluginBase<CorePlugin>::timer_callback_() {
   auto stamp = node_->get_clock()->now();
-  diagnostic_pub_->publish(stamp, plugin_->make_diagnostic_report(to_romea_duration(stamp)));
+  diagnostic_pub_->publish(
+      stamp, plugin_->make_diagnostic_report(to_romea_duration(stamp)));
 }
-
 
 }  // namespace localisation
 }  // namespace ros2
 }  // namespace romea
 
 #include "rclcpp_components/register_node_macro.hpp"
-RCLCPP_COMPONENTS_REGISTER_NODE(romea::ros2::localisation::SingleAntennaGPSPlugin)
+RCLCPP_COMPONENTS_REGISTER_NODE(
+    romea::ros2::localisation::SingleAntennaGPSPlugin)
 RCLCPP_COMPONENTS_REGISTER_NODE(romea::ros2::localisation::DualAntennaGPSPlugin)
