@@ -13,13 +13,13 @@
 // limitations under the License.
 
 // std
-#include <string>
 #include <limits>
+#include <string>
 
 // romea ros
-#include "romea_common_utils/params/node_parameters.hpp"
 #include "romea_common_utils/params/eigen_parameters.hpp"
 #include "romea_common_utils/params/geodesy_parameters.hpp"
+#include "romea_common_utils/params/node_parameters.hpp"
 
 // local
 #include "romea_localisation_gps_plugin/gps_plugin_parameters.hpp"
@@ -61,16 +61,14 @@ void declare_restamping(rclcpp::Node::SharedPtr node)
 void declare_minimal_fix_quality(rclcpp::Node::SharedPtr node)
 {
   declare_parameter_with_default<int>(
-    node, minimal_fix_quality_param_name,
-    static_cast<int>(DEFAULT_MINIMAL_FIX_QUALITY));
+    node, minimal_fix_quality_param_name, static_cast<int>(DEFAULT_MINIMAL_FIX_QUALITY));
 }
 
 //----------------------------------------------------------------------------
 void declare_minimal_speed_over_ground(rclcpp::Node::SharedPtr node)
 {
   declare_parameter_with_default<double>(
-    node, minimal_speed_over_ground_param_name,
-    DEFAULT_MINIMAL_SPEED_OVER_GROUND);
+    node, minimal_speed_over_ground_param_name, DEFAULT_MINIMAL_SPEED_OVER_GROUND);
 }
 
 //----------------------------------------------------------------------------
@@ -102,7 +100,6 @@ core::GeodeticCoordinates get_wgs84_anchor(rclcpp::Node::SharedPtr node)
 {
   return get_geodetic_coordinates_parameter(node, wgs84_anchor_param_name);
 }
-
 
 // //-----------------------------------------------------------------------------
 // void declare_gps_gps_fix_eure(rclcpp::Node::SharedPtr node)
@@ -145,7 +142,6 @@ core::GeodeticCoordinates get_wgs84_anchor(rclcpp::Node::SharedPtr node)
 // {
 //   return get_parameter<double>(node, gps_fix_uere_param_name);
 // }
-
 
 // //-----------------------------------------------------------------------------
 // double get_gps_dgps_fix_eure(rclcpp::Node::SharedPtr node)

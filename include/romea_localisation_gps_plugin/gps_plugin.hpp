@@ -37,32 +37,33 @@
 // local
 #include "romea_localisation_gps_plugin/visibility_control.h"
 
-namespace romea {
-namespace ros2 {
-namespace localisation {
+namespace romea
+{
+namespace ros2
+{
+namespace localisation
+{
 
-template <typename CorePlugin>
-class GPSPluginBase {
- public:
+template<typename CorePlugin>
+class GPSPluginBase
+{
+public:
   using OdometryMsg = nav_msgs::msg::Odometry;
   using NmeaSentenceMsg = nmea_msgs::msg::Sentence;
-  using ObservationCourseStampedMsg =
-      romea_localisation_msgs::msg::ObservationCourseStamped;
-  using ObservationPositionStampedMsg =
-      romea_localisation_msgs::msg::ObservationPosition2DStamped;
+  using ObservationCourseStampedMsg = romea_localisation_msgs::msg::ObservationCourseStamped;
+  using ObservationPositionStampedMsg = romea_localisation_msgs::msg::ObservationPosition2DStamped;
 
- public:
+public:
   ROMEA_LOCALISATION_GPS_PLUGIN_PUBLIC
-  explicit GPSPluginBase(const rclcpp::NodeOptions& options);
+  explicit GPSPluginBase(const rclcpp::NodeOptions & options);
 
   ROMEA_LOCALISATION_GPS_PLUGIN_PUBLIC
   virtual ~GPSPluginBase() = default;
 
   ROMEA_LOCALISATION_GPS_PLUGIN_PUBLIC
-  rclcpp::node_interfaces::NodeBaseInterface::SharedPtr
-  get_node_base_interface() const;
+  rclcpp::node_interfaces::NodeBaseInterface::SharedPtr get_node_base_interface() const;
 
- protected:
+protected:
   void declare_parameters_();
 
   void init_plugin_();
@@ -83,20 +84,19 @@ class GPSPluginBase {
 
   void process_odom_(OdometryMsg::ConstSharedPtr msg);
 
-  void process_position_(const NmeaSentenceMsg& msg);
+  void process_position_(const NmeaSentenceMsg & msg);
 
-  void process_course_(const NmeaSentenceMsg& msg);
+  void process_course_(const NmeaSentenceMsg & msg);
 
-  void process_satellites_view_(const NmeaSentenceMsg& msg);
+  void process_satellites_view_(const NmeaSentenceMsg & msg);
 
-  void publish_position_(const rclcpp::Time& stamp,
-                         const std::string& frame_id);
+  void publish_position_(const rclcpp::Time & stamp, const std::string & frame_id);
 
-  void publish_course_(const rclcpp::Time& stamp, const std::string& frame_id);
+  void publish_course_(const rclcpp::Time & stamp, const std::string & frame_id);
 
   void timer_callback_();
 
- protected:
+protected:
   rclcpp::Node::SharedPtr node_;
   std::unique_ptr<CorePlugin> plugin_;
   core::localisation::ObservationPosition position_observation_;
@@ -112,10 +112,8 @@ class GPSPluginBase {
   bool restamping_;
 };
 
-using SingleAntennaGPSPlugin =
-    GPSPluginBase<core::localisation::SingleAntennaGPSPlugin>;
-using DualAntennaGPSPlugin =
-    GPSPluginBase<core::localisation::DualAntennaGPSPlugin>;
+using SingleAntennaGPSPlugin = GPSPluginBase<core::localisation::SingleAntennaGPSPlugin>;
+using DualAntennaGPSPlugin = GPSPluginBase<core::localisation::DualAntennaGPSPlugin>;
 
 }  // namespace localisation
 }  // namespace ros2

@@ -25,8 +25,8 @@
 #include "rclcpp/node.hpp"
 
 // romea
-#include "romea_core_gps/nmea/NMEAFixQuality.hpp"
 #include "romea_core_common/geodesy/GeodeticCoordinates.hpp"
+#include "romea_core_gps/nmea/NMEAFixQuality.hpp"
 
 namespace romea
 {
